@@ -99,7 +99,7 @@ class LoginActivity : AppCompatActivity() {
                 loading.visibility = View.VISIBLE
 //                loginViewModel.login(username.text.toString(), password.text.toString())
                 RestEndpoint.publicAPI.loginVerifySmsCode( username.text.toString(),   password.text.toString()).observe(this@LoginActivity, Observer { resp ->
-                    Log.d("LoginActivity", "onCreate: loginViewModel:${resp.}")
+//                    Log.d("LoginActivity", "onCreate: loginViewModel:${resp.}")
                     if(resp is ApiErrorResponse) {
                         
                     }
