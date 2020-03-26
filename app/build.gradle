@@ -73,4 +73,6 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
 
+    implementation 'com.alibaba:fastjson:1.2.59'
+
 }
