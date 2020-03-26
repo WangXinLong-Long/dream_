@@ -9,7 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.alading.dream.R
+import com.example.libnavannotation.FragmentDestination
 
+@FragmentDestination(pageUrl = "main/tabs/notification" ,asStarter = false)
 class NotificationsFragment : Fragment() {
 
     private lateinit var notificationsViewModel: NotificationsViewModel

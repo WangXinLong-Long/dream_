@@ -9,7 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.alading.dream.R
+import com.example.libnavannotation.FragmentDestination
 
+@FragmentDestination(pageUrl = "main/tabs/dash" ,asStarter = false)
 class DashboardFragment : Fragment() {
 
     private lateinit var dashboardViewModel: DashboardViewModel
