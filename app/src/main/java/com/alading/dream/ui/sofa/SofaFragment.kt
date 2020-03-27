@@ -1,4 +1,4 @@
-package com.alading.dream.ui.notifications
+package com.alading.dream.ui.sofa
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,21 +11,21 @@ import androidx.lifecycle.ViewModelProviders
 import com.alading.dream.R
 import com.example.libnavannotation.FragmentDestination
 
-@FragmentDestination(pageUrl = "main/tabs/notification" ,asStarter = false)
-class NotificationsFragment : Fragment() {
+@FragmentDestination(pageUrl = "main/tabs/sofa", asStarter = false)
+class SofaFragment : Fragment() {
 
-    private lateinit var notificationsViewModel: NotificationsViewModel
+    private lateinit var sofaViewModel: SofaViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        notificationsViewModel =
-                ViewModelProviders.of(this).get(NotificationsViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_notifications, container, false)
+        sofaViewModel =
+                ViewModelProviders.of(this).get(SofaViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_sofa, container, false)
         val textView: TextView = root.findViewById(R.id.text_notifications)
-        notificationsViewModel.text.observe(viewLifecycleOwner, Observer {
+        sofaViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root

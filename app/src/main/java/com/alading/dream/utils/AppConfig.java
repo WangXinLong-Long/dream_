@@ -2,6 +2,7 @@ package com.alading.dream.utils;
 
 import android.content.res.AssetManager;
 
+import com.alading.dream.data.model.BottomBar;
 import com.alading.dream.data.model.Destination;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 public class AppConfig {
 
     private static HashMap<String, Destination> sDestConfig;
+    private static BottomBar sBottomBar;
 
     public static HashMap<String, Destination> getDestConfig() {
         if (sDestConfig == null) {
@@ -32,39 +34,41 @@ public class AppConfig {
 
 
     private static String parseFile(String fileName) {
-        AssetManager assetsManager = AppGlobals.getApplication().getResources().getAssets();
-        InputStream stream = null;
-        BufferedReader reader = null;
-        StringBuffer sb = new StringBuffer();
+        AssetManager assets = AppGlobals.getApplication().getAssets();
+        InputStream is = null;
+        BufferedReader br = null;
+        StringBuilder builder = new StringBuilder();
         try {
-            stream = assetsManager.open(fileName);
-            reader = new BufferedReader(new InputStreamReader(stream));
+            is = assets.open(fileName);
+            br = new BufferedReader(new InputStreamReader(is));
             String line = null;
-
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
+            while ((line = br.readLine()) != null) {
+                builder.append(line);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+            try {
+                if (is != null) {
+                    is.close();
                 }
-            }
+                if (br != null) {
+                    br.close();
+                }
+            } catch (Exception e) {
 
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
 
-        return sb.toString();
+        return builder.toString();
+    }
+
+
+    public static BottomBar getBottomBarConfig(){
+        if (sBottomBar == null){
+            String content = parseFile("main_tabs_config.json");
+            sBottomBar = JSON.parseObject(content,BottomBar.class);
+        }
+        return sBottomBar;
     }
 }
