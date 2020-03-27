@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.alading.dream.R
+import com.alading.dream.utils.MyLog
 import com.example.libnavannotation.FragmentDestination
 
 @FragmentDestination(pageUrl = "main/tabs/sofa", asStarter = false)
@@ -24,10 +25,11 @@ class SofaFragment : Fragment() {
         sofaViewModel =
                 ViewModelProviders.of(this).get(SofaViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_sofa, container, false)
-        val textView: TextView = root.findViewById(R.id.text_notifications)
+        val textView: TextView = root.findViewById(R.id.text_sofa)
         sofaViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
+        MyLog.logD("SofaFragment::onCreateView: sofaViewModel:${sofaViewModel}  ")
         return root
     }
 }

@@ -11,6 +11,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.alading.dream.R
+import com.alading.dream.utils.MyLog
 import com.alading.dream.utils.NavGraphBuilder
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -19,17 +20,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        var navHostFragment = R.id.nav_host_fragment
+        navController = findNavController(navHostFragment)
 
-        navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        val appBarConfiguration = AppBarConfiguration(setOf(
-//            R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications))
-//        setupActionBarWithNavController(navController!!, appBarConfiguration)
         navView.setupWithNavController(navController!!)
 //        navController?.handleDeepLink(intent)
-
-        NavGraphBuilder.build(navController)
+MyLog.logD("MainActivity::onCreate: navHostFragment:${navHostFragment} supportFragmentManager.findFragmentById(navHostFragment)!!.id:${supportFragmentManager.findFragmentById(navHostFragment)!!.id}  ")
+        NavGraphBuilder.build(navController,this,supportFragmentManager.findFragmentById(navHostFragment)!!.id)
 
         navView.setOnNavigationItemSelectedListener(this)
 

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.alading.dream.R
+import com.alading.dream.utils.MyLog
 import com.example.libnavannotation.FragmentDestination
 
 @FragmentDestination(pageUrl = "main/tabs/find")
@@ -23,11 +24,12 @@ class FindFragment : Fragment() {
     ): View? {
         findViewModel =
                 ViewModelProviders.of(this).get(FindViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_sofa, container, false)
-        val textView: TextView = root.findViewById(R.id.text_notifications)
+        val root = inflater.inflate(R.layout.fragment_find, container, false)
+        val textView: TextView = root.findViewById(R.id.text_find)
         findViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
+        MyLog.logD("FindFragment::onCreateView: findViewModel:${findViewModel}  ")
         return root
     }
 }
