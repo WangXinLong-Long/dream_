@@ -1,4 +1,4 @@
-package com.example.libcommon.dialog;
+package com.alading.libcommon.dialog;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,9 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
-import com.mooc.libcommon.R;
-import com.mooc.libcommon.utils.PixUtils;
-import com.mooc.libcommon.view.ViewHelper;
+import com.alading.libcommon.R;
+import com.alading.libcommon.utils.PixUtils;
+import com.alading.libcommon.view.ViewHelper;
+
 
 public class LoadingDialog extends AlertDialog {
     private TextView loadingText;

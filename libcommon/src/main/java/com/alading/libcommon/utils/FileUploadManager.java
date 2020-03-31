@@ -1,7 +1,8 @@
-package com.example.libcommon.utils;
+package com.alading.libcommon.utils;
 
 import android.util.Log;
 
+import com.alading.libcommon.global.AppGlobals;
 import com.alibaba.sdk.android.oss.ClientConfiguration;
 import com.alibaba.sdk.android.oss.ClientException;
 import com.alibaba.sdk.android.oss.OSSClient;
@@ -16,7 +17,6 @@ import com.alibaba.sdk.android.oss.model.GetObjectRequest;
 import com.alibaba.sdk.android.oss.model.GetObjectResult;
 import com.alibaba.sdk.android.oss.model.PutObjectRequest;
 import com.alibaba.sdk.android.oss.model.PutObjectResult;
-import com.example.libcommon.global.AppGlobals;
 
 /**
  * 阿里云oss 文件上传

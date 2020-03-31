@@ -1,4 +1,4 @@
-package com.example.libcommon.extention;
+package com.alading.libcommon.extention;
 
 import android.util.SparseArray;
 import android.view.View;
@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
+
 
 /**
  * 一个能够添加HeaderView,FooterView的PagedListAdapter。

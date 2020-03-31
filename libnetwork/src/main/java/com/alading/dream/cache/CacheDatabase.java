@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.example.libcommon.global.AppGlobals;
+import com.alading.libcommon.global.AppGlobals;
 
 @Database(entities = {Cache.class},version = 1, exportSchema = true)
 public abstract class CacheDatabase extends RoomDatabase {

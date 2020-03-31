@@ -1,4 +1,4 @@
-package com.example.libcommon.utils;
+package com.alading.libcommon.utils;
 
 import android.app.Activity;
 import android.graphics.Color;

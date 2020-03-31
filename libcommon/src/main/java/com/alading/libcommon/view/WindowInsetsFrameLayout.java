@@ -1,4 +1,4 @@
-package com.example.libcommon.view;
+package com.alading.libcommon.view;
 
 import android.content.Context;
 import android.util.AttributeSet;

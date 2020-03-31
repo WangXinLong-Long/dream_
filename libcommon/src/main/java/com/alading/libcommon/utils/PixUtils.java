@@ -1,8 +1,8 @@
-package com.example.libcommon.utils;
+package com.alading.libcommon.utils;
 
 import android.util.DisplayMetrics;
 
-import com.example.libcommon.global.AppGlobals;
+import com.alading.libcommon.global.AppGlobals;
 
 
 public class PixUtils {

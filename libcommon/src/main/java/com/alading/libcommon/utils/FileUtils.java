@@ -1,4 +1,4 @@
-package com.example.libcommon.utils;
+package com.alading.libcommon.utils;
 
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;

@@ -1,4 +1,4 @@
-package com.example.libcommon.view;
+package com.alading.libcommon.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
