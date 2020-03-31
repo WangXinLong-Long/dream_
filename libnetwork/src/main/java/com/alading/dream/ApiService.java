@@ -21,6 +21,8 @@ public class ApiService {
 
 
     public static OkHttpClient okHttpClient;
+    protected static String baseUrl;
+    protected static Convert mConvert;
 
     static {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
@@ -71,4 +73,13 @@ public class ApiService {
         }
     }
 
+
+    public static void init(String baseUrl,Convert convert) {
+
+        ApiService.baseUrl = baseUrl;
+        if (convert == null){
+            convert = new JsonConvert();
+        }
+        mConvert = convert;
+    }
 }

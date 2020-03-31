@@ -22,7 +22,7 @@ public class UrlCreator {
 
             try {
                 String value = URLEncoder.encode((String) entry.getValue(),"UTF-8");
-                builder.append(entry.getKey()).append("=").append(entry).append("&");
+                builder.append(entry.getKey()).append("=").append(value).append("&");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

@@ -2,11 +2,18 @@ package com.alading.dream;
 
 import androidx.annotation.IntDef;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public abstract class Request<T, R extends Request> {
     protected String mUrl;
@@ -67,16 +74,57 @@ public abstract class Request<T, R extends Request> {
 
     }
 
-    public void execute(JsonCallback<T> callback) {
-        getCall();
+    public void execute(final JsonCallback<T> callback) {
+        getCall().enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                ApiResponse<T> response = new ApiResponse<>();
+                response.msg = e.getMessage();
+                callback.onError(response);
+            }
 
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                ApiResponse<T> apiResponse = parseResponse(response, callback);
+                if (apiResponse.success) {
+                    callback.onError(apiResponse);
+                } else {
+                    callback.onSuccess(apiResponse);
+                }
+            }
+        });
+
+    }
+
+    private ApiResponse<T> parseResponse(Response response, JsonCallback<T> callback) {
+
+        String message = null;
+        int status = response.code();
+        boolean success = response.isSuccessful();
+        ApiResponse<T> result = new ApiResponse<>();
+        Convert mConvert = ApiService.mConvert;
+        try {
+            if (success){
+                String content = response.body().string();
+
+                if (callback!=null){
+                    ParameterizedType type = (ParameterizedType) callback.getClass().getGenericSuperclass();
+                    Type argument = type.getActualTypeArguments()[0];
+                    result.body = (T) mConvert.convert(content,argument);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private Call getCall() {
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
         addHeaders(builder);
 
-        okhttp3.Request request =  generateRequest(builder);
+        okhttp3.Request request = generateRequest(builder);
         Call call = ApiService.okHttpClient.newCall(request);
         return call;
     }
