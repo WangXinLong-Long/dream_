@@ -111,6 +111,7 @@ public abstract class Request<T, R extends Request> {
                     ParameterizedType type = (ParameterizedType) callback.getClass().getGenericSuperclass();
                     Type argument = type.getActualTypeArguments()[0];
                     result.body = (T) mConvert.convert(content,argument);
+
                 }
             }
         } catch (IOException e) {
