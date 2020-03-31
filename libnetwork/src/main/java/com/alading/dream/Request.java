@@ -1,5 +1,7 @@
 package com.alading.dream;
 
+import android.util.Log;
+
 import androidx.annotation.IntDef;
 
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +32,8 @@ public abstract class Request<T, R extends Request> {
     //先访问网咯，成功后缓存到本地
     public static final int NET_CACHE = 4;
     private String cacheKey;
+    private Type mType;
+    private Class mClaz;
 
     @IntDef({CACHE_ONLY, CACHE_FIRST, NET_ONLY, NET_CACHE})
     public @interface CacheStrategy {
@@ -70,8 +74,15 @@ public abstract class Request<T, R extends Request> {
         return (R) this;
     }
 
-    public void execute() {
-
+    public ApiResponse<T> execute() {
+        try {
+            Response response = getCall().execute();
+            ApiResponse<T> result = parseResponse(response, null);
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void execute(final JsonCallback<T> callback) {
@@ -96,6 +107,7 @@ public abstract class Request<T, R extends Request> {
 
     }
 
+    private static final String TAG = "Request";
     private ApiResponse<T> parseResponse(Response response, JsonCallback<T> callback) {
 
         String message = null;
@@ -104,21 +116,43 @@ public abstract class Request<T, R extends Request> {
         ApiResponse<T> result = new ApiResponse<>();
         Convert mConvert = ApiService.mConvert;
         try {
-            if (success){
-                String content = response.body().string();
-
-                if (callback!=null){
+            String content = response.body().string();
+            if (success) {
+                if (callback != null) {
                     ParameterizedType type = (ParameterizedType) callback.getClass().getGenericSuperclass();
                     Type argument = type.getActualTypeArguments()[0];
-                    result.body = (T) mConvert.convert(content,argument);
+                    result.body = (T) mConvert.convert(content, argument);
 
+                }else if (mType!=null){
+                    result.body = (T) mConvert.convert(content,mType);
+                }else if (mClaz!=null){
+                    result.body = (T) mConvert.convert(content,mClaz);
+                }else {
+                    Log.e(TAG, "parseResponse: 无法解析" );
                 }
+            } else {
+                message = content;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            message = e.getMessage();
+            success = false;
         }
+        result.success = success;
+        result.status = status;
+        result.msg = message;
+        return result;
+    }
 
-        return null;
+
+    public R responseType(Type type) {
+
+        mType = type;
+        return (R) this;
+    }
+
+    public R responseType(Class claz) {
+        mClaz = claz;
+        return (R) this;
     }
 
     private Call getCall() {

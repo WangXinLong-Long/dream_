@@ -10,7 +10,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.alading.dream"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -38,6 +38,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':libnavannotation')
+    implementation project(':libnetwork')
+    implementation project(':libcommon')
     kapt project(':libnavcompiler')
 
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
