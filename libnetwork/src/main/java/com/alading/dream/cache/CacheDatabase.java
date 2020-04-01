@@ -46,6 +46,8 @@ public abstract class CacheDatabase extends RoomDatabase {
         return database;
     }
 
+    public abstract CacheDao getCache();
+
 //    static Migration sMigration = new Migration(1,3) {
 //        @Override
 //        public void migrate(@NonNull SupportSQLiteDatabase database) {

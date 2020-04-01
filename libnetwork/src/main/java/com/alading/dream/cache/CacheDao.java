@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 @Dao
 public interface CacheDao {
@@ -20,6 +21,6 @@ public interface CacheDao {
     @Delete
     int delete(Cache cache);
 
-    @Delete()
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     int update(Cache cache);
 }

@@ -12,6 +12,7 @@ import androidx.navigation.fragment.FragmentNavigator;
 
 import com.alading.dream.FixFragmentNavigator;
 import com.alading.dream.data.model.Destination;
+import com.alading.libcommon.global.AppGlobals;
 
 import java.util.HashMap;
 

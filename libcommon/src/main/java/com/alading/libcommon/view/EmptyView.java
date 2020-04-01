@@ -14,7 +14,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.libcommon.R;
+import com.alading.libcommon.R;
 
 
 public class EmptyView extends LinearLayout {

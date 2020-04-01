@@ -7,7 +7,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
-import com.mooc.libcommon.R;
+import com.alading.libcommon.R;
+
 
 public class ViewHelper {
 
