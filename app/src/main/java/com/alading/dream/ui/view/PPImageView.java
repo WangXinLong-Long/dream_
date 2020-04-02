@@ -25,7 +25,7 @@ public class PPImageView extends AppCompatImageView {
         super(context, attrs, defStyleAttr);
     }
 
-    @BindingAdapter(value = {"image_url", "isCircle"})
+    @BindingAdapter(value = {"image_url", "isCircle"},requireAll = false)
     public static void setImageUrl(PPImageView view, String imageUrl, Boolean isCircle) {
         RequestBuilder<Drawable> builder = Glide.with(view).load(imageUrl);
         if (isCircle) {

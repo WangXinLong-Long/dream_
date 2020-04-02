@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -7,6 +8,7 @@
         <variable
             name="user"
             type="User" />
+
         <import type="com.alading.dream.model.User"></import>
     </data>
 
@@ -18,10 +20,12 @@
         android:paddingLeft="@dimen/dp_16"
         android:paddingRight="@dimen/dp_16">
 
-        <ImageView
+        <com.alading.dream.ui.view.PPImageView
             android:id="@+id/avatar"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
+            app:image_url="@{user.avatar}"
+            app:isCircle="@{true}"
             tools:src="@mipmap/ic_launcher_round" />
 
         <TextView
