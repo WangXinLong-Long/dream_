@@ -1,4 +1,4 @@
-package com.example.libcommon;
+package com.alading.libcommon;
 
 import org.junit.Test;
 

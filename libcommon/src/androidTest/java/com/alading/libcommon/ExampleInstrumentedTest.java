@@ -1,4 +1,4 @@
-package com.example.libcommon;
+package com.alading.libcommon;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.example.libcommon.test", appContext.getPackageName());
+        assertEquals("com.alading.libcommon.test", appContext.getPackageName());
     }
 }
