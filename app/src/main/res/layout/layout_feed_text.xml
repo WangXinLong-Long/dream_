@@ -2,21 +2,27 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-<variable
-    name="feedText"
 
-    type="" />
+        <variable
+            name="feedText"
+            type="java.lang.String" />
+
+        <import type="android.text.TextUtils" />
+
+        <import type="android.view.View" />
     </data>
 
     <TextView
         android:layout_width="match_parent"
-        android:maxLines="3"
-        android:ellipsize="end"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dp_16"
         android:layout_marginRight="@dimen/dp_16"
-        android:textSize="@dimen/sp_16"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:text="@{feedText}"
         android:textColor="@color/color_2f2"
-        android:layout_height="wrap_content">
+        android:textSize="@dimen/sp_16"
+        android:visibility="@{TextUtils.isEmpty(feedText)?View.GONE:View.VISIBLE}">
 
 
     </TextView>
