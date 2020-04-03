@@ -17,7 +17,6 @@ import com.alading.dream.R
 import com.alading.dream.utils.MyLog
 import com.alading.dream.utils.NavGraphBuilder
 import com.alibaba.fastjson.JSONObject
-import com.google.gson.JsonObject
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var navController : NavController? = null

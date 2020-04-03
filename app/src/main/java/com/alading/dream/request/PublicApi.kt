@@ -1,18 +1,18 @@
 package com.alading.dream.request
 
 import androidx.lifecycle.LiveData
-import retrofit2.http.*
+
 import java.util.*
 
 interface PublicApi {
-
-    @FormUrlEncoded
-    @POST("login")
-    fun loginVerifySmsCode(@Field("telNum") telNum: String, @Field("password") pass_word: String): LiveData<ApiResponse<VerifySmsCodeResp>>
-
-    @FormUrlEncoded
-    @POST("login/send_sms_code")
-    fun loginSendSmsCode(@Field("mobileNumber") mobileNumber: String): LiveData<ApiResponse<String>>
+//
+//    @FormUrlEncoded
+//    @POST("login")
+//    fun loginVerifySmsCode(@Field("telNum") telNum: String, @Field("password") pass_word: String): LiveData<ApiResponse<VerifySmsCodeResp>>
+//
+//    @FormUrlEncoded
+//    @POST("login/send_sms_code")
+//    fun loginSendSmsCode(@Field("mobileNumber") mobileNumber: String): LiveData<ApiResponse<String>>
 
 }
 //{

@@ -4,13 +4,14 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:backgroundTint="@color/color_gray"
+    android:text="神秘的XXX"
     android:textColor="@color/color_2f2"
     android:textSize="@dimen/sp_12"
     app:icon="@drawable/icon_tag"
     app:iconGravity="textStart"
     app:iconPadding="@dimen/dp_4"
-  android:text=""
     app:iconSize="@dimen/dp_12"
+    app:cornerRadius="25dp"
     app:iconTint="@color/color_theme">
 
 
