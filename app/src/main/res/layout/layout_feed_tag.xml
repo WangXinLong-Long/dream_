@@ -1,18 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.button.MaterialButton xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:backgroundTint="@color/color_gray"
-    android:text="神秘的XXX"
-    android:textColor="@color/color_2f2"
-    android:textSize="@dimen/sp_12"
-    app:icon="@drawable/icon_tag"
-    app:iconGravity="textStart"
-    app:iconPadding="@dimen/dp_4"
-    app:iconSize="@dimen/dp_12"
-    app:cornerRadius="25dp"
-    app:iconTint="@color/color_theme">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="tagText"
+            type="java.lang.String" />
 
 
-</com.google.android.material.button.MaterialButton>
+        <import type="android.text.TextUtils" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:stateListAnimator="@null"
+        android:text="@{tagText}"
+        android:textColor="@color/color_2f2"
+        android:textSize="@dimen/sp_10"
+        android:visibility="@{TextUtils.isEmpty(tagText)?View.GONE:View.VISIBLE}"
+        app:backgroundTint="@color/color_gray"
+        app:cornerRadius="10dp"
+        app:icon="@drawable/icon_tag"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/dp_4"
+        app:iconSize="@dimen/dp_12"
+        app:iconTint="@color/color_theme"
+        app:iconTintMode="multiply"
+        tools:text="神秘XXX" />
+
+
+</layout>
