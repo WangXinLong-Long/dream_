@@ -82,4 +82,13 @@ public class ApiService {
         }
         mConvert = convert;
     }
+
+    public static <T> GetRequest<T> get(String url){
+        return new GetRequest<>(baseUrl+url);
+    }
+
+
+    public static <T> PostRequest<T> post(String url){
+        return new PostRequest<>(baseUrl+url);
+    }
 }

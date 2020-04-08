@@ -55,7 +55,7 @@ public class PPImageView extends AppCompatImageView {
         bindData(widthPx,heightPx,marginLeft,PixUtils.getScreenWidth(),PixUtils.getScreenWidth(),imageUrl);
     }
     public void bindData(int widthPx, int heightPx, int marginLeft, int maxWidth, int maxHeight, String imageUrl) {
-        if (widthPx <= 0 || heightPx < -0) {
+        if (widthPx <= 0 || heightPx <= 0) {
             Glide.with(this).load(imageUrl).into(new SimpleTarget<Drawable>() {
                 @Override
                 public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
