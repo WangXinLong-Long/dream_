@@ -8,6 +8,10 @@
             name="feed"
             type="Feed" />
 
+        <variable
+            name="lifeCycleOwner"
+            type="androidx.lifecycle.LifecycleOwner" />
+
         <import type="com.alading.dream.model.Feed" />
     </data>
 
@@ -15,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="@color/color_white"
         android:paddingTop="@dimen/dp_10">
 
 
@@ -25,7 +30,9 @@
 
         <include
             layout="@layout/layout_feed_text"
-            app:feedText="@{feed.feeds_text}" />
+
+            app:feedText="@{feed.feeds_text}"
+            app:lines="@{3}"/>
 
         <!--视频区域-->
 
@@ -51,4 +58,5 @@
 
 
     </LinearLayout>
+
 </layout>

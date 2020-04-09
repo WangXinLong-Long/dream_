@@ -7,13 +7,15 @@
         android:id="@+id/blur_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:transitionName="blur_image"
         android:background="@color/color_theme_10" />
 
     <!--真正能够播放展示视频画面的view 会动态的添加到这里-->
     <com.alading.dream.ui.view.PPImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:transitionName="cover"/>
 
 
     <ImageView
@@ -21,7 +23,8 @@
         android:layout_width="@dimen/dp_40"
         android:layout_height="@dimen/dp_40"
         android:layout_gravity="center"
-        android:src="@drawable/icon_video_play" />
+        android:src="@drawable/icon_video_play"
+        android:transitionName="play_btn"/>
 
     <!--视频播放时的底部进度条-->
 
@@ -32,5 +35,6 @@
         android:layout_gravity="center"
         android:indeterminate="true"
         android:indeterminateTint="@color/color_theme_10"
+        android:transitionName="buffer_view"
         android:visibility="gone" />
 </merge>
