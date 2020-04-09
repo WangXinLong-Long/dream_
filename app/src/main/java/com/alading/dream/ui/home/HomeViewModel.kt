@@ -8,7 +8,7 @@ import com.alading.dream.JsonCallback
 import com.alading.dream.Request
 import com.alading.dream.model.Feed
 import com.alading.dream.ui.AbsViewModel
-import com.alading.dream.utils.MyLog
+import com.alading.libcommon.utils.MyLog
 import com.alibaba.fastjson.TypeReference
 import java.util.*
 

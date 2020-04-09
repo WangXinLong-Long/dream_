@@ -1,4 +1,4 @@
-package com.alading.dream.utils;
+package com.alading.libcommon.utils;
 
 import android.util.Log;
 

@@ -1,5 +1,7 @@
 package com.alading.dream;
 
+import com.alading.libcommon.utils.MyLog;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -21,7 +23,8 @@ public class UrlCreator {
         for (Map.Entry<String, Object> entry : params.entrySet()) {
 
             try {
-                String value = URLEncoder.encode((String) entry.getValue(),"UTF-8");
+                MyLog.logD("UrlCreator::createUrlFromParams: entry.getValue():"+entry.getValue());
+                String value = URLEncoder.encode( entry.getValue().toString(),"UTF-8");
                 builder.append(entry.getKey()).append("=").append(value).append("&");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

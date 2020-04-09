@@ -7,12 +7,19 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
 import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alading.dream.R;
 import com.alading.dream.databinding.LayoutRefreshViewBinding;
 import com.alading.libcommon.view.EmptyView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -24,7 +31,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 
-public abstract class AbsListFragment<T,VM extends AbsViewModel<T>> extends Fragment implements OnRefreshListener, OnLoadMoreListener {
+public abstract class AbsListFragment<T, VM extends AbsViewModel<T>> extends Fragment implements OnRefreshListener, OnLoadMoreListener {
 
 
     private LayoutRefreshViewBinding binding;
@@ -32,6 +39,7 @@ public abstract class AbsListFragment<T,VM extends AbsViewModel<T>> extends Frag
     protected SmartRefreshLayout mRefreshLayout;
     protected EmptyView mEmptyView;
     private PagedListAdapter<T, RecyclerView.ViewHolder> adapter;
+    protected VM mViewModel;
 
     @Nullable
     @Override
@@ -50,17 +58,42 @@ public abstract class AbsListFragment<T,VM extends AbsViewModel<T>> extends Frag
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setItemAnimator(null);
+        DividerItemDecoration decoration = new DividerItemDecoration(getContext(),LinearLayoutManager.VERTICAL);
+        decoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.list_divider));
+        mRecyclerView.addItemDecoration(decoration);
+        afterCreateView();
         return binding.getRoot();
     }
+
+    protected abstract void afterCreateView();
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
+        Type[] arguments = type.getActualTypeArguments();
+        if (arguments.length > 1) {
+            Type argument = arguments[1];
+            Class modelClaz = ((Class) argument).asSubclass(AbsViewModel.class);
+            mViewModel = (VM) ViewModelProviders.of(this).get(modelClaz);
+            mViewModel.getPageData().observe(getViewLifecycleOwner(), new Observer<PagedList<T>>() {
+                @Override
+                public void onChanged(PagedList<T> pagedList) {
+                    adapter.submitList(pagedList);
+                }
+            });
 
+            mViewModel.getBoundaryPageData().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean hasData) {
+                    finishRefresh(hasData);
+                }
+            });
+        }
     }
 
-    public abstract PagedListAdapter<T, RecyclerView.ViewHolder> getAdapter();
+    public abstract PagedListAdapter getAdapter();
 
     public void finishRefresh(boolean hasDta) {
         PagedList<T> currentList = adapter.getCurrentList();

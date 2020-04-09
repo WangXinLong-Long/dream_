@@ -7,16 +7,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.alading.dream.ApiResponse
-import com.alading.dream.GetRequest
-import com.alading.dream.JsonCallback
 import com.alading.dream.R
-import com.alading.dream.utils.MyLog
+import com.alading.libcommon.utils.MyLog
 import com.alading.dream.utils.NavGraphBuilder
-import com.alibaba.fastjson.JSONObject
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var navController : NavController? = null
