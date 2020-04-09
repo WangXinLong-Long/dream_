@@ -24,6 +24,7 @@
         android:background="@color/color_gray2"
         android:paddingLeft="@dimen/dp_10"
         android:paddingRight="@dimen/dp_10"
+        android:visibility="@{comment==null?View.GONE:View.VISIBLE}"
         android:paddingBottom="@dimen/dp_10">
 
         <ImageView
@@ -103,7 +104,8 @@
             <FrameLayout
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginTop="@dimen/dp_10">
+                android:layout_marginTop="@dimen/dp_10"
+                android:visibility="@{TextUtils.isEmpty(comment.imageUrl)?View.GONE:View.VISIBLE}">
 
                 <com.alading.dream.ui.view.PPImageView
                     android:layout_width="match_parent"
@@ -111,6 +113,7 @@
                     android:layout_gravity="center"
                     android:background="@color/color_theme_10"
                     android:src="@mipmap/ic_launcher"
+                    android:visibility="@{TextUtils.isEmpty(comment.imageUrl)?View.GONE:View.VISIBLE}"
                     app:image_url="@{comment.imageUrl}"
                     app:isCircle="@{false}" />
 

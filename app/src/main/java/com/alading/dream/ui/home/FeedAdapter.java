@@ -18,7 +18,7 @@ import com.alading.dream.databinding.LayoutFeedTypeVideoBinding;
 import com.alading.dream.model.Feed;
 import com.alading.dream.ui.view.ListPlayerView;
 
-import static androidx.databinding.library.baseAdapters.BR.feed;
+import static com.alading.dream.BR.feed;
 
 public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> {
 
