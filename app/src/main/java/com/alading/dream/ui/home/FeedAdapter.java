@@ -56,9 +56,9 @@ public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> 
 
         ViewDataBinding binding = null;
         if (viewType == Feed.TYPE_IMAGE_TEXT) {
-            binding = LayoutFeedTypeImageBinding.inflate(inflater);
+            binding = LayoutFeedTypeImageBinding.inflate(inflater,parent,false);
         } else {
-            binding = LayoutFeedTypeVideoBinding.inflate(inflater);
+            binding = LayoutFeedTypeVideoBinding.inflate(inflater,parent,false);
         }
         return new ViewHolder(binding.getRoot(), binding);
     }
