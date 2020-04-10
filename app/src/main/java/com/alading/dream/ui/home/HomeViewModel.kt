@@ -57,6 +57,7 @@ class HomeViewModel : AbsViewModel<Feed>() {
             request.execute(object : JsonCallback<List<Feed>>() {
                 override fun onCacheSuccess(response: ApiResponse<List<Feed>>?) {
                     MyLog.logD("HomeViewModel::onCacheSuccess: response:${response?.body?.size}  ")
+                    var body = response?.body
                 }
             })
         }

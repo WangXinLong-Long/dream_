@@ -26,7 +26,7 @@ class HomeFragment : AbsListFragment<Feed,HomeViewModel>() {
     }
 
     override fun onRefresh(refreshLayout: RefreshLayout) {
-
+mViewModel.dataSource.invalidate()
     }
 
     override fun afterCreateView() {
