@@ -21,6 +21,7 @@ public abstract class AbsViewModel<T> extends ViewModel {
     private DataSource dataSource;
     private LiveData<PagedList<T>> pageData;
     private MutableLiveData<Boolean> boundaryPageData = new MutableLiveData<>();
+    public PagedList.Config config;
 
     public MutableLiveData<Boolean> getBoundaryPageData() {
         return boundaryPageData;
@@ -37,7 +38,7 @@ public abstract class AbsViewModel<T> extends ViewModel {
     public abstract DataSource createDataSource();
 
     public AbsViewModel() {
-        PagedList.Config config = new PagedList.Config.Builder()
+        config = new PagedList.Config.Builder()
                 .setPageSize(10)
                 .setInitialLoadSizeHint(12)
 //                .setPrefetchDistance()

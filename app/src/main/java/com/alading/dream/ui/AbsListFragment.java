@@ -40,11 +40,13 @@ public abstract class AbsListFragment<T, VM extends AbsViewModel<T>> extends Fra
     protected EmptyView mEmptyView;
     private PagedListAdapter<T, RecyclerView.ViewHolder> adapter;
     protected VM mViewModel;
+    protected DividerItemDecoration decoration;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = LayoutRefreshViewBinding.inflate(inflater, container, false);
+        binding.getRoot().setFitsSystemWindows(true);
         mRecyclerView = binding.recyclerView;
         mRefreshLayout = binding.refreshLayout;
         mEmptyView = binding.emptyView;
@@ -58,46 +60,47 @@ public abstract class AbsListFragment<T, VM extends AbsViewModel<T>> extends Fra
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setItemAnimator(null);
-        DividerItemDecoration decoration = new DividerItemDecoration(getContext(),LinearLayoutManager.VERTICAL);
+
+        //默认给列表中的Item 一个 10dp的ItemDecoration
+        decoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
         decoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.list_divider));
         mRecyclerView.addItemDecoration(decoration);
-        afterCreateView();
+
+        genericViewModel();
         return binding.getRoot();
+
     }
 
-    protected abstract void afterCreateView();
 
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private void genericViewModel() {
+        //利用 子类传递的 泛型参数实例化出absViewModel 对象。
         ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
         Type[] arguments = type.getActualTypeArguments();
         if (arguments.length > 1) {
             Type argument = arguments[1];
             Class modelClaz = ((Class) argument).asSubclass(AbsViewModel.class);
             mViewModel = (VM) ViewModelProviders.of(this).get(modelClaz);
-            mViewModel.getPageData().observe(getViewLifecycleOwner(), new Observer<PagedList<T>>() {
-                @Override
-                public void onChanged(PagedList<T> pagedList) {
-                    adapter.submitList(pagedList);
-                }
-            });
 
-            mViewModel.getBoundaryPageData().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-                @Override
-                public void onChanged(Boolean hasData) {
-                    finishRefresh(hasData);
-                }
-            });
+            //触发页面初始化数据加载的逻辑
+            mViewModel.getPageData().observe(getViewLifecycleOwner(), pagedList -> submitList(pagedList));
+
+            //监听分页时有无更多数据,以决定是否关闭上拉加载的动画
+            mViewModel.getBoundaryPageData().observe(getViewLifecycleOwner(), hasData -> finishRefresh(hasData));
         }
     }
 
-    public abstract PagedListAdapter getAdapter();
+    public void submitList(PagedList<T> result) {
+        //只有当新数据集合大于0 的时候，才调用adapter.submitList
+        //否则可能会出现 页面----有数据----->被清空-----空布局
+        if (result.size() > 0) {
+            adapter.submitList(result);
+        }
+        finishRefresh(result.size() > 0);
+    }
 
-    public void finishRefresh(boolean hasDta) {
+    public void finishRefresh(boolean hasData) {
         PagedList<T> currentList = adapter.getCurrentList();
-        hasDta = hasDta || currentList != null && currentList.size() > 0;
+        hasData = hasData || currentList != null && currentList.size() > 0;
         RefreshState state = mRefreshLayout.getState();
         if (state.isFooter && state.isOpening) {
             mRefreshLayout.finishLoadMore();
@@ -105,17 +108,18 @@ public abstract class AbsListFragment<T, VM extends AbsViewModel<T>> extends Fra
             mRefreshLayout.finishRefresh();
         }
 
-        if (hasDta) {
+        if (hasData) {
             mEmptyView.setVisibility(View.GONE);
         } else {
             mEmptyView.setVisibility(View.VISIBLE);
         }
     }
 
-    public void submitList(PagedList<T> pagedList) {
-        if (pagedList.size() > 0) {
-            adapter.submitList(pagedList);
-        }
-        finishRefresh(pagedList.size() > 0);
-    }
+    /**
+     * 因而 我们在 onCreateView的时候 创建了 PagedListAdapter
+     * 所以，如果arguments 有参数需要传递到Adapter 中，那么需要在getAdapter()方法中取出参数。
+     *
+     * @return
+     */
+    public abstract PagedListAdapter getAdapter();
 }

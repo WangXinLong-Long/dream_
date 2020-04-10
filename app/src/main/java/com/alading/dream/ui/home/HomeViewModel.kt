@@ -1,21 +1,28 @@
 package com.alading.dream.ui.home
 
+import androidx.arch.core.executor.ArchTaskExecutor
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.ItemKeyedDataSource
+import androidx.paging.PagedList
 import com.alading.dream.ApiResponse
 import com.alading.dream.ApiService
 import com.alading.dream.JsonCallback
 import com.alading.dream.Request
 import com.alading.dream.model.Feed
 import com.alading.dream.ui.AbsViewModel
+import com.alading.dream.ui.MutablePageKeyedDataSource
 import com.alading.libcommon.utils.MyLog
 import com.alibaba.fastjson.TypeReference
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 class HomeViewModel : AbsViewModel<Feed>() {
 
     @Volatile
     private var witchCache: Boolean = true
+    val cacheLiveData = MutableLiveData<PagedList<Feed>>()
+    private var loadAfter = AtomicBoolean(false)
     override fun createDataSource(): DataSource<*, *> {
         return mDataSource
     }
@@ -45,6 +52,9 @@ class HomeViewModel : AbsViewModel<Feed>() {
     }
 
     private fun loadData(key: Int, callback: ItemKeyedDataSource.LoadCallback<Feed>) {
+        if (key > 0) {
+            loadAfter.set(true)
+        }
         var request = ApiService.get<Feed>("/feeds/queryHotFeedsList")
             .addParam("feedType", null)
             .addParam("userId", 0)
@@ -57,7 +67,10 @@ class HomeViewModel : AbsViewModel<Feed>() {
             request.execute(object : JsonCallback<List<Feed>>() {
                 override fun onCacheSuccess(response: ApiResponse<List<Feed>>?) {
                     MyLog.logD("HomeViewModel::onCacheSuccess: response:${response?.body?.size}  ")
-                    var body = response?.body
+                    var dataSource = MutablePageKeyedDataSource<Feed>()
+                    dataSource.data.addAll(response?.body!!)
+                    var pageList = dataSource.buildNewPagedList(config)
+                    cacheLiveData.postValue(pageList)
                 }
             })
         }
@@ -81,8 +94,21 @@ class HomeViewModel : AbsViewModel<Feed>() {
             response.body
         }
         callback.onResult(data)
-        if (key>0){
+        if (key > 0) {
             boundaryPageData.postValue(data.isNotEmpty())
+            loadAfter.set(false)
+        }
+
+        MyLog.logD("HomeViewModel: loadData: $key ----- ")
+    }
+
+    fun loadAfter(id: Int, loadCallback: ItemKeyedDataSource.LoadCallback<Feed>) {
+        if (loadAfter.get()) {
+            loadCallback.onResult(Collections.emptyList())
+            return
+        }
+        ArchTaskExecutor.getIOThreadExecutor().execute {
+            loadData(id, loadCallback)
         }
     }
 }
