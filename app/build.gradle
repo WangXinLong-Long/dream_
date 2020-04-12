@@ -46,5 +46,6 @@ dependencies {
     implementation project(':libcommon')
     kapt project(':libnavcompiler')
 
-
+    //QQ快捷登录
+    implementation files('libs/open_sdk_r6140_lite.jar')
 }

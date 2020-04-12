@@ -1,140 +1,160 @@
 package com.alading.dream.ui.login
 
-import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
-
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import com.alading.dream.ApiResponse
+import com.alading.dream.ApiService.get
+import com.alading.dream.JsonCallback
 import com.alading.dream.R
-import com.alading.dream.request.ApiErrorResponse
-import com.alading.dream.request.RestEndpoint
+import com.alading.dream.model.User
+import com.alading.libcommon.view.toast
+import com.tencent.connect.UserInfo
+import com.tencent.connect.auth.QQToken
+import com.tencent.connect.common.Constants
+import com.tencent.tauth.IUiListener
+import com.tencent.tauth.Tencent
+import com.tencent.tauth.UiError
+import org.json.JSONException
+import org.json.JSONObject
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
 
-    private lateinit var loginViewModel: LoginViewModel
+    private var loginViewModel = viewModels<LoginViewModel>()
 
+    private var actionClose: View? = null
+    private var actionLogin: View? = null
+    private var tencent: Tencent? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
 
-        val username = findViewById<EditText>(R.id.username)
-        val password = findViewById<EditText>(R.id.password)
-        val login = findViewById<Button>(R.id.login)
-        val loading = findViewById<ProgressBar>(R.id.loading)
 
-        loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
-            .get(LoginViewModel::class.java)
 
-        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
-            val loginState = it ?: return@Observer
+        actionClose = findViewById<View>(R.id.action_close)
+        actionLogin = findViewById<View>(R.id.action_login)
 
-            // disable login button unless both username / password is valid
-            login.isEnabled = loginState.isDataValid
+        actionClose?.setOnClickListener(this)
+        actionLogin?.setOnClickListener(this)
+    }
 
-            if (loginState.usernameError != null) {
-                username.error = getString(loginState.usernameError)
-            }
-            if (loginState.passwordError != null) {
-                password.error = getString(loginState.passwordError)
-            }
-        })
-
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
-            val loginResult = it ?: return@Observer
-
-            loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
-            }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
-            }
-            setResult(Activity.RESULT_OK)
-
-            //Complete and destroy login activity once successful
+    override fun onClick(v: View?) {
+        if (v!!.id == R.id.action_close) {
             finish()
-        })
+        } else if (v.id == R.id.action_login) {
+            login()
+        }
+    }
 
-        username.afterTextChanged {
-            loginViewModel.loginDataChanged(
-                username.text.toString(),
-                password.text.toString()
-            )
+    private fun login() {
+        if (tencent == null) {
+            tencent = Tencent.createInstance("1110337243", applicationContext)
+        }
+        tencent?.login(this, "all", loginListener)
+    }
+
+    val loginListener = object : IUiListener {
+        override fun onComplete(p0: Any?) {
+            var response = p0 as JSONObject
+            try {
+                val openid = response.getString("openid")
+                val access_token = response.getString("access_token")
+                val expires_in = response.getString("expires_in")
+                val expires_time = response.getLong("expires_time")
+                tencent!!.openId = openid
+                tencent!!.setAccessToken(access_token, expires_in)
+                val qqToken = tencent!!.qqToken
+                getUserInfo(qqToken, expires_time, openid)
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
         }
 
-        password.apply {
-            afterTextChanged {
-                loginViewModel.loginDataChanged(
-                    username.text.toString(),
-                    password.text.toString()
-                )
-            }
+        override fun onCancel() {
+            toast("登录取消")
+        }
 
-            setOnEditorActionListener { _, actionId, _ ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                            username.text.toString(),
-                            password.text.toString()
-                        )
+        override fun onError(uiError: UiError?) {
 
+            toast("登录失败:reason" + uiError.toString())
+        }
+
+    }
+
+    private fun getUserInfo(
+        qqToken: QQToken,
+        expires_time: Long,
+        openid: String
+    ) {
+        val userInfo =
+            UserInfo(applicationContext, qqToken)
+        userInfo.getUserInfo(object : IUiListener {
+            override fun onComplete(o: Any) {
+                val response = o as JSONObject
+                try {
+                    val nickname = response.getString("nickname")
+                    val figureurl_2 = response.getString("figureurl_2")
+                    save(nickname, figureurl_2, openid, expires_time)
+                } catch (e: JSONException) {
+                    e.printStackTrace()
                 }
-                false
             }
 
-            login.setOnClickListener {
-                loading.visibility = View.VISIBLE
-//                loginViewModel.login(username.text.toString(), password.text.toString())
-//                RestEndpoint.publicAPI.loginVerifySmsCode( username.text.toString(),   password.text.toString()).observe(this@LoginActivity, Observer { resp ->
-////                    Log.d("LoginActivity", "onCreate: loginViewModel:${resp.}")
-//                    if(resp is ApiErrorResponse) {
-//
-//                    }
-//                })
+            override fun onError(uiError: UiError) {
+                toast("登录失败:reason$uiError")
             }
+
+            override fun onCancel() {
+                toast("登录取消")
+            }
+        })
+    }
+
+    private fun save(
+        nickname: String,
+        avatar: String,
+        openid: String,
+        expires_time: Long
+    ) {
+        get<Any>("/user/insert")
+            .addParam("name", nickname)
+            .addParam("avatar", avatar)
+            .addParam("qqOpenId", openid)
+            .addParam("expires_time", expires_time)
+            .execute(object : JsonCallback<User?>() {
+                override fun onSuccess(response: ApiResponse<User?>) {
+                    if (response.body != null) {
+                        UserManager.get().save(response.body)
+                        finish()
+                    } else {
+                        runOnUiThread {
+                            toast("登陆失败")
+
+                        }
+                    }
+                }
+
+                override fun onError(response: ApiResponse<User?>) {
+                    runOnUiThread {
+                        toast("登陆失败,msg:" + response.msg)
+                    }
+                }
+            })
+    }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == Constants.REQUEST_LOGIN) {
+            Tencent.onActivityResultData(requestCode, resultCode, data, loginListener)
         }
-    }
-
-    private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
-        // TODO : initiate successful logged in experience
-        Toast.makeText(
-            applicationContext,
-            "$welcome $displayName",
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    private fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
 }
 
-/**
- * Extension function to simplify setting an afterTextChanged action to EditText components.
- */
-fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-    this.addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(editable: Editable?) {
-            afterTextChanged.invoke(editable.toString())
-        }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-    })
-}

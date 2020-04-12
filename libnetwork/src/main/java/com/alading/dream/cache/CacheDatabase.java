@@ -18,7 +18,8 @@ public abstract class CacheDatabase extends RoomDatabase {
 //        Room.inMemoryDatabaseBuilder()
           database = Room.databaseBuilder(AppGlobals.getApplication(), CacheDatabase.class, "dream_cache")
 
-//                .allowMainThreadQueries()
+                  //是否允许在主线程进行查询
+                  .allowMainThreadQueries()
 
                 //数据库创建和打开后的回调
 //                .addCallback()
