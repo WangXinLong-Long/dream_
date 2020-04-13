@@ -12,6 +12,7 @@ import com.alading.dream.Request
 import com.alading.dream.model.Feed
 import com.alading.dream.ui.AbsViewModel
 import com.alading.dream.ui.MutablePageKeyedDataSource
+import com.alading.dream.ui.login.UserManager
 import com.alading.libcommon.utils.MyLog
 import com.alibaba.fastjson.TypeReference
 import java.util.*
@@ -57,7 +58,7 @@ class HomeViewModel : AbsViewModel<Feed>() {
         }
         var request = ApiService.get<Feed>("/feeds/queryHotFeedsList")
             .addParam("feedType", null)
-            .addParam("userId", 0)
+            .addParam("userId", UserManager.get().userId)
             .addParam("feedId", key)
             .addParam("pageCount", 10)
             .responseType(object : TypeReference<ArrayList<Feed>>() {}.type)

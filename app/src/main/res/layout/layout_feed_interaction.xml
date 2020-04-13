@@ -8,10 +8,14 @@
         <variable
             name="feed"
             type="Feed" />
-
+        <variable
+            name="lifeCycleOwner"
+            type="androidx.lifecycle.LifecycleOwner" />
         <import type="com.alading.dream.model.Feed" />
 
         <import type="com.alading.dream.utils.StringConvert" />
+
+        <import type="com.alading.dream.ui.home.InteractionPresenter"/>
     </data>
 
     <LinearLayout
@@ -26,6 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:onClick="@{()->InteractionPresenter.toggleFeedLike(lifeCycleOwner,feed)}"
             android:text="@{feed.ugc.likeCount>0?StringConvert.convertFeedUgc(feed.ugc.likeCount):@string/like}"
             android:textColor="@{feed.ugc.hasLiked?@color/color_theme:@color/color_3d3}"
             android:textSize="@dimen/sp_14"
@@ -47,6 +52,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="踩"
+            android:onClick="@{()->InteractionPresenter.toggleFeedDiss(lifeCycleOwner,feed)}"
             android:textColor="@{feed.ugc.hasdiss?@color/color_theme:@color/color_3d3}"
             android:textSize="@dimen/sp_14"
             app:backgroundTint="@color/color_white"

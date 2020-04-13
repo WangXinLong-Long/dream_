@@ -3,23 +3,32 @@ package com.alading.dream.ui.main
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.MenuItem
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.alading.dream.R
 import com.alading.dream.ui.login.UserManager
 import com.alading.dream.utils.AppConfig
-import com.alading.libcommon.utils.MyLog
 import com.alading.dream.utils.NavGraphBuilder
+import com.alading.libcommon.utils.StatusBar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var navController: NavController? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        //由于 启动时设置了 R.style.launcher 的windowBackground属性
+        //势必要在进入主页后,把窗口背景清理掉
+
+        //由于 启动时设置了 R.style.launcher 的windowBackground属性
+        //势必要在进入主页后,把窗口背景清理掉
+        setTheme(R.style.AppTheme)
+
+        //启用沉浸式布局，白底黑字
+
+        //启用沉浸式布局，白底黑字
+        StatusBar.fitSystemBar(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
