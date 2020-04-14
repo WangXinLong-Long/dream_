@@ -48,7 +48,6 @@
             layout="@layout/layout_feed_top_comment"
             app:comment="@{feed.topComment}" />
 
-
         <include
             layout="@layout/layout_feed_interaction"
             app:feed="@{feed}"
