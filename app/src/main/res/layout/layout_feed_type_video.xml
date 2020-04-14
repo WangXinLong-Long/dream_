@@ -54,7 +54,8 @@
 
         <include
             layout="@layout/layout_feed_interaction"
-            app:feed="@{feed}" />
+            app:feed="@{feed}"
+            app:lifeCycleOwner="@{lifeCycleOwner}"/>
 
 
     </LinearLayout>

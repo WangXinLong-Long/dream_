@@ -90,7 +90,7 @@
                     android:layout_marginLeft="@dimen/dp_4"
                     android:padding="2dp"
 
-                    android:onClick="@{()->InteractionPresenter.toggleFeedLike(lifeCycleOwner,comment)}"
+                    android:onClick="@{()->InteractionPresenter.toggleCommentLike(lifeCycleOwner,comment)}"
                     android:src="@{comment.ugc.hasLiked?@drawable/icon_cell_liked:@drawable/icon_cell_like}"
                     tools:src="@drawable/icon_cell_like" />
             </LinearLayout>
