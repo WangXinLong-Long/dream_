@@ -106,11 +106,11 @@ public class InteractionPresenter {
                 });
     }
 
-    public static void openShare(Context context, Feed feed) {
+    public static void openShare(LifecycleOwner context, Feed feed) {
         String url = "http://h5.aliyun.ppjoke.com/item/%s?timestamp=%s&user_id=%s";
         String format = String.format(url, feed.itemId, new Date().getTime(), UserManager.get().getUserId());
 
-        ShareDialog shareDialog = new ShareDialog(context);
+        ShareDialog shareDialog = new ShareDialog(((Context) context));
         shareDialog.setShareContent(format);
         shareDialog.setShareItemClick(new View.OnClickListener() {
             @Override
@@ -129,6 +129,7 @@ public class InteractionPresenter {
                         });
             }
         });
+        shareDialog.show();
     }
 
 
