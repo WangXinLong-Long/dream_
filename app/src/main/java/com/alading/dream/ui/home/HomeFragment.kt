@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.paging.ItemKeyedDataSource
+import com.alading.dream.exoplayer.PageListPlayDetector
 import com.alading.dream.model.Feed
 import com.alading.dream.ui.AbsListFragment
 import com.alading.dream.ui.MutablePageKeyedDataSource
@@ -13,6 +14,7 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout
 @FragmentDestination(pageUrl = "main/tabs/home", asStarter = true)
 class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
 
+    var playDetector:PageListPlayDetector? = null
 
     override fun getAdapter(): FeedAdapter {
         var feedType = if (arguments == null) {
@@ -20,7 +22,19 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
         } else {
             arguments?.getString("feedType")
         }
-        return FeedAdapter(context, feedType)
+        return object :FeedAdapter(context, feedType){
+            override fun onViewAttachedToWindow(holder: ViewHolder) {
+                super.onViewAttachedToWindow(holder)
+if (holder.isVideoItem){
+    playDetector?.addTarget(holder.getListPlayerView())
+}
+            }
+
+            override fun onViewDetachedFromWindow(holder: ViewHolder) {
+                super.onViewDetachedFromWindow(holder)
+                playDetector?.removeTarget(holder.getListPlayerView())
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -28,6 +42,8 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
         mViewModel.cacheLiveData.observe(viewLifecycleOwner, Observer { feeds ->
             submitList(feeds)
         })
+
+         playDetector = PageListPlayDetector(this,mRecyclerView)
     }
 
     override fun onLoadMore(refreshLayout: RefreshLayout) {
@@ -60,4 +76,14 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
     }
 
 
+    override fun onPause() {
+        playDetector?.onPause()
+        super.onPause()
+
+    }
+
+    override fun onResume() {
+        playDetector?.onResume()
+        super.onResume()
+    }
 }

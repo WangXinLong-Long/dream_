@@ -101,5 +101,6 @@ public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> 
         public ListPlayerView getListPlayerView() {
             return listPlayerView;
         }
+
     }
 }
