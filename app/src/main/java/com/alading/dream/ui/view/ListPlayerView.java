@@ -169,7 +169,7 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
         controlView.show();
 
         if (TextUtils.equals(pageListPlay.pageUrl, mVideoUrl)) {
-
+            onPlayerStateChanged(true, Player.STATE_READY);
         } else {
             MediaSource mediaSource = PageListPlayManager.createMediaSource(mVideoUrl);
             exoPlayer.prepare(mediaSource);
