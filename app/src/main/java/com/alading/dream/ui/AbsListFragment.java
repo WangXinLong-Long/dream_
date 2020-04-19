@@ -87,6 +87,7 @@ public abstract class AbsListFragment<T, VM extends AbsViewModel<T>> extends Fra
             //监听分页时有无更多数据,以决定是否关闭上拉加载的动画
             mViewModel.getBoundaryPageData().observe(getViewLifecycleOwner(), hasData -> finishRefresh(hasData));
         }
+
     }
 
     public void submitList(PagedList<T> result) {

@@ -17,6 +17,17 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
 
     var playDetector: PageListPlayDetector? = null
 
+    companion object {
+        fun newInstance(feedType: String?): HomeFragment? {
+            val args = Bundle()
+            args.putString("feedType", feedType)
+            val fragment = HomeFragment()
+            fragment.arguments = args
+            return fragment
+        }
+
+    }
+
     override fun getAdapter(): FeedAdapter {
         var feedType = if (arguments == null) {
             "all"
@@ -85,7 +96,25 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
 
     override fun onResume() {
         MyLog.logD("HomeFragment: onResume:  ----- ${playDetector == null}")
+        if (parentFragment != null) {
+            if (parentFragment!!.isVisible && isVisible) {
+                playDetector?.onResume()
+            }
+        } else {
+            if (isVisible) {
+                playDetector?.onResume()
+            }
+        }
         playDetector?.onResume()
         super.onResume()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            playDetector?.onPause()
+        } else {
+            playDetector?.onResume()
+        }
     }
 }
