@@ -9,9 +9,13 @@ import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alading.libcommon.utils.MyLog;
+
 import java.util.ArrayList;
 import java.util.List;
 
+//看看 mTargets
+//看看 delayAutoPlay
 public class PageListPlayDetector {
 
     private List<IPlayTarget> mTarget = new ArrayList<>();
@@ -34,6 +38,9 @@ public class PageListPlayDetector {
             @Override
             public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
                 if (event == Lifecycle.Event.ON_DESTROY) {
+                    playingTarget = null;
+//                    mTargets.clear();
+                    recyclerView.removeCallbacks(runnable);
                     recyclerView.getAdapter().unregisterAdapterDataObserver(mDataObserver);
                     owner.getLifecycle().removeObserver(this);
                 }
@@ -51,17 +58,33 @@ public class PageListPlayDetector {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (playingTarget!=null && playingTarget.isPlaying() && !isTargetInBounds(playingTarget)){
+                if (dx == 0 && dy == 0) {
+                    MyLog.logD("PageListPlayDetector: onScrolled: dx == 0 && dy == 0" );
+                    postAutoPlay();
+                }
+                if (playingTarget != null && playingTarget.isPlaying() && !isTargetInBounds(playingTarget)) {
                     playingTarget.inActive();
                 }
             }
         });
     }
 
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            autoPlay();
+        }
+    };
+
+    private void postAutoPlay() {
+        mRecyclerView.post(runnable);
+    }
+
     private RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
-            autoPlay();
+            MyLog.logD("PageListPlayDetector: onItemRangeInserted: " );
+            postAutoPlay();
         }
     };
 
@@ -72,21 +95,21 @@ public class PageListPlayDetector {
         }
 
 
-        if (playingTarget!=null&& playingTarget.isPlaying() && isTargetInBounds(playingTarget)){
+        if (playingTarget != null && playingTarget.isPlaying() && isTargetInBounds(playingTarget)) {
             return;
         }
 
         IPlayTarget activeTarget = null;
         for (IPlayTarget target : mTarget) {
             boolean inBounds = isTargetInBounds(target);
-            if (inBounds){
+            if (inBounds) {
                 activeTarget = target;
                 break;
             }
         }
 
-        if (activeTarget!=null){
-            if (playingTarget!=null && playingTarget.isPlaying()){
+        if (activeTarget != null) {
+            if (playingTarget != null && playingTarget.isPlaying()) {
 
                 playingTarget.inActive();
             }
@@ -106,7 +129,7 @@ public class PageListPlayDetector {
         owner.getLocationOnScreen(location);
 
         int center = location[1] + owner.getHeight() / 2;
-        return center>=rvLocation.x && center<=rvLocation.y;
+        return center >= rvLocation.x && center <= rvLocation.y;
     }
 
     private Point ensureRecyclerViewLocation() {
@@ -121,14 +144,14 @@ public class PageListPlayDetector {
     }
 
     public void onPause() {
-        if (playingTarget!=null){
+        if (playingTarget != null) {
             playingTarget.inActive();
         }
     }
 
     public void onResume() {
-
-        if (playingTarget!=null){
+        MyLog.logD("PageListPlayDetector: onResume: " + (playingTarget == null));
+        if (playingTarget != null) {
             playingTarget.onActive();
         }
     }

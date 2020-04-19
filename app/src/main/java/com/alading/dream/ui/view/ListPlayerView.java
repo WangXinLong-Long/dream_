@@ -19,6 +19,7 @@ import com.alading.dream.R;
 import com.alading.dream.exoplayer.IPlayTarget;
 import com.alading.dream.exoplayer.PageListPlay;
 import com.alading.dream.exoplayer.PageListPlayManager;
+import com.alading.libcommon.utils.MyLog;
 import com.alading.libcommon.utils.PixUtils;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -55,9 +56,9 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
         playBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isPlaying()){
+                if (isPlaying()) {
                     inActive();
-                }else {
+                } else {
                     onActive();
                 }
             }
@@ -140,6 +141,7 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
 
     @Override
     public void onActive() {
+        MyLog.logD("ListPlayerView: onActive: ");
         PageListPlay pageListPlay = PageListPlayManager.get(mCategory);
         PlayerView playerView = pageListPlay.playerView;
         PlayerControlView controlView = pageListPlay.controlView;
@@ -150,6 +152,8 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
 
             if (parent != null) {
                 ((ViewGroup) parent).removeView(playerView);
+                //还应该暂停掉列表上正在播放的那个
+                ((ListPlayerView) parent).inActive();
             }
             ViewGroup.LayoutParams layoutParams = cover.getLayoutParams();
             this.addView(playerView, 1, layoutParams);
@@ -164,9 +168,9 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.BOTTOM;
             this.addView(controlView, params);
-            controlView.setVisibilityListener(this);
+
         }
-        controlView.show();
+
 
         if (TextUtils.equals(pageListPlay.pageUrl, mVideoUrl)) {
             onPlayerStateChanged(true, Player.STATE_READY);
@@ -174,8 +178,12 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
             MediaSource mediaSource = PageListPlayManager.createMediaSource(mVideoUrl);
             exoPlayer.prepare(mediaSource);
             exoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
-            exoPlayer.addListener(this);
+            //修复 点击后重新播放的bug
+            pageListPlay.pageUrl = mVideoUrl;
         }
+        controlView.setVisibilityListener(this);
+        controlView.show();
+        exoPlayer.addListener(this);
         exoPlayer.setPlayWhenReady(true);
     }
 

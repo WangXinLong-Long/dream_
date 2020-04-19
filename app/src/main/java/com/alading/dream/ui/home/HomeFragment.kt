@@ -8,6 +8,7 @@ import com.alading.dream.exoplayer.PageListPlayDetector
 import com.alading.dream.model.Feed
 import com.alading.dream.ui.AbsListFragment
 import com.alading.dream.ui.MutablePageKeyedDataSource
+import com.alading.libcommon.utils.MyLog
 import com.example.libnavannotation.FragmentDestination
 import com.scwang.smartrefresh.layout.api.RefreshLayout
 
@@ -83,6 +84,7 @@ if (holder.isVideoItem){
     }
 
     override fun onResume() {
+        MyLog.logD("HomeFragment: onResume:  ----- ${playDetector == null}")
         playDetector?.onResume()
         super.onResume()
     }
