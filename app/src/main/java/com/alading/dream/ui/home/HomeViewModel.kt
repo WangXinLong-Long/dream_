@@ -25,10 +25,11 @@ class HomeViewModel : AbsViewModel<Feed>() {
     val cacheLiveData = MutableLiveData<PagedList<Feed>>()
     private var loadAfter = AtomicBoolean(false)
     override fun createDataSource(): DataSource<*, *> {
-        return mDataSource
+//        createDataSource ….只有当当前的数据源无效的时候，才会调用到这个方法，所以此时应该创建个新的返回回去 给paging
+        return FeedDataSource()/*mDataSource*/
     }
 
-    private var mDataSource = object : ItemKeyedDataSource<Int, Feed>() {
+    inner class FeedDataSource/* private var mDataSource = object*/: ItemKeyedDataSource<Int, Feed>() {
         override fun loadInitial(
             params: LoadInitialParams<Int>,
             callback: LoadInitialCallback<Feed>

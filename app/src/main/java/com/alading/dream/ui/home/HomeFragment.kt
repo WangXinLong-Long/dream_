@@ -15,7 +15,7 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout
 @FragmentDestination(pageUrl = "main/tabs/home", asStarter = true)
 class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
 
-    var playDetector:PageListPlayDetector? = null
+    var playDetector: PageListPlayDetector? = null
 
     override fun getAdapter(): FeedAdapter {
         var feedType = if (arguments == null) {
@@ -23,12 +23,12 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
         } else {
             arguments?.getString("feedType")
         }
-        return object :FeedAdapter(context, feedType){
+        return object : FeedAdapter(context, feedType) {
             override fun onViewAttachedToWindow(holder: ViewHolder) {
                 super.onViewAttachedToWindow(holder)
-if (holder.isVideoItem){
-    playDetector?.addTarget(holder.getListPlayerView())
-}
+                if (holder.isVideoItem) {
+                    playDetector?.addTarget(holder.getListPlayerView())
+                }
             }
 
             override fun onViewDetachedFromWindow(holder: ViewHolder) {
@@ -44,12 +44,12 @@ if (holder.isVideoItem){
             submitList(feeds)
         })
 
-         playDetector = PageListPlayDetector(this,mRecyclerView)
+        playDetector = PageListPlayDetector(this, mRecyclerView)
     }
 
     override fun onLoadMore(refreshLayout: RefreshLayout) {
         var currentList = adapter.currentList
-        if (currentList == null ||currentList.isEmpty()) {
+        if (currentList == null || currentList.isEmpty()) {
             finishRefresh(false)
             return
         }

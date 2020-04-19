@@ -14,7 +14,9 @@ public abstract class AbsViewModel<T> extends ViewModel {
         @NonNull
         @Override
         public DataSource create() {
-            dataSource = createDataSource();
+            if (dataSource == null || dataSource.isInvalid()) {
+                dataSource = createDataSource();
+            }
             return dataSource;
         }
     };
