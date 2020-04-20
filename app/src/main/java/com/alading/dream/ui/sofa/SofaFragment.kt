@@ -25,7 +25,7 @@ class SofaFragment : Fragment() {
 
     private lateinit var sofaViewModel: SofaViewModel
     var tabs = arrayListOf<SofaTab.Tabs>()
-    private var mFragmentMap = HashMap<Int, Fragment>()
+    var binding: FragmentSofaBinding? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,15 +34,15 @@ class SofaFragment : Fragment() {
         sofaViewModel =
             ViewModelProviders.of(this).get(SofaViewModel::class.java)
 
-        var binding = FragmentSofaBinding.inflate(inflater, container, false)
+        binding = FragmentSofaBinding.inflate(inflater, container, false)
 
-        return binding.root
+        return binding!!.root
     }
 
     private val mediator: TabLayoutMediator
         get() {
             return TabLayoutMediator(
-                tab_layout, view_pager, false,
+                tab_layout!!, view_pager!!, false,
                 TabLayoutMediator.TabConfigurationStrategy { tab, position ->
                     tab.customView = makeTabView(position)
                 })
@@ -50,53 +50,49 @@ class SofaFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         var tabConfig = getTabConfig()
 
-        for (tab in tabs) {
+        for (tab in tabConfig.tabs) {
             if (tab.enable) {
                 tabs.add(tab)
             }
         }
 
-        view_pager.offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT
-        view_pager.adapter = object : FragmentStateAdapter(childFragmentManager, lifecycle) {
+        view_pager?.offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT
+        view_pager?.adapter = object : FragmentStateAdapter(childFragmentManager, lifecycle) {
             override fun getItemCount(): Int {
                 return tabs.size
             }
 
             override fun createFragment(position: Int): Fragment {
-                var fragment = mFragmentMap[position]
-                if (fragment == null) {
-                    fragment = getTabFragment(position)
-                }
-                return fragment!!
+
+                return getTabFragment(position)
             }
 
         }
 
-
+        tab_layout.tabGravity = tabConfig.tabGravity
 
         mediator.attach()
 
-        view_pager.registerOnPageChangeCallback(mPageChangeCallback)
+        view_pager?.registerOnPageChangeCallback(mPageChangeCallback)
 
-        view_pager.post {
-            view_pager.currentItem = tabConfig.select
+        view_pager?.post {
+            view_pager?.currentItem = tabConfig.select
         }
     }
 
     private var mPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
-            var tabCount = tab_layout.tabCount
-            for (i in 0..tabCount) {
-                var tabAt = tab_layout.getTabAt(i)!!
+            var tabCount = tab_layout!!.tabCount
+            for (i in 0 until tabCount) {
+                var tabAt = tab_layout!!.getTabAt(i)!!
                 var customView = tabAt.customView as TextView
-                if (tabAt.position == position){
+                if (tabAt.position == position) {
                     customView.textSize = getTabConfig().activeSize.toFloat()
                     customView.typeface = Typeface.DEFAULT_BOLD
-                }else{
+                } else {
                     customView.textSize = getTabConfig().normalSize.toFloat()
                     customView.typeface = Typeface.DEFAULT
                 }
@@ -107,7 +103,7 @@ class SofaFragment : Fragment() {
 
     private fun makeTabView(position: Int): View {
         var tabView = TextView(context)
-        var states = arrayOf(IntArray(2))
+        var states = arrayOf(IntArray(1), IntArray(0))
         states[0] = IntArray(android.R.attr.state_selected)
         states[1] = IntArray(0)
         var colors = intArrayOf(
@@ -122,7 +118,7 @@ class SofaFragment : Fragment() {
         return tabView
     }
 
-    private fun getTabFragment(position: Int): Fragment? {
+    private fun getTabFragment(position: Int): Fragment {
         return HomeFragment.newInstance(tabs[position].tag)
     }
 
@@ -133,7 +129,7 @@ class SofaFragment : Fragment() {
 
     override fun onDestroy() {
         mediator.detach()
-        view_pager.unregisterOnPageChangeCallback(mPageChangeCallback)
+        view_pager?.unregisterOnPageChangeCallback(mPageChangeCallback)
         super.onDestroy()
     }
 }

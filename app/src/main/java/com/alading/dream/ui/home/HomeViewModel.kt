@@ -24,6 +24,8 @@ class HomeViewModel : AbsViewModel<Feed>() {
     private var witchCache: Boolean = true
     val cacheLiveData = MutableLiveData<PagedList<Feed>>()
     private var loadAfter = AtomicBoolean(false)
+
+    var mFeedType: String? = null
     override fun createDataSource(): DataSource<*, *> {
 //        createDataSource ….只有当当前的数据源无效的时候，才会调用到这个方法，所以此时应该创建个新的返回回去 给paging
         return FeedDataSource()/*mDataSource*/
@@ -58,7 +60,7 @@ class HomeViewModel : AbsViewModel<Feed>() {
             loadAfter.set(true)
         }
         var request = ApiService.get<Feed>("/feeds/queryHotFeedsList")
-            .addParam("feedType", null)
+            .addParam("feedType", mFeedType)
             .addParam("userId", UserManager.get().userId)
             .addParam("feedId", key)
             .addParam("pageCount", 10)
@@ -112,5 +114,9 @@ class HomeViewModel : AbsViewModel<Feed>() {
         ArchTaskExecutor.getIOThreadExecutor().execute {
             loadData(id, loadCallback)
         }
+    }
+
+    fun setFeedType(feedType: String) {
+        mFeedType = feedType
     }
 }

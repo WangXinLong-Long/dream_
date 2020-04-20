@@ -16,9 +16,10 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout
 class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
 
     var playDetector: PageListPlayDetector? = null
+    var feedType: String? = null
 
     companion object {
-        fun newInstance(feedType: String?): HomeFragment? {
+        fun newInstance(feedType: String?): HomeFragment  {
             val args = Bundle()
             args.putString("feedType", feedType)
             val fragment = HomeFragment()
@@ -29,7 +30,7 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
     }
 
     override fun getAdapter(): FeedAdapter {
-        var feedType = if (arguments == null) {
+        feedType = if (arguments == null) {
             "all"
         } else {
             arguments?.getString("feedType")
@@ -56,6 +57,7 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
         })
 
         playDetector = PageListPlayDetector(this, mRecyclerView)
+        mViewModel.setFeedType(feedType!!)
     }
 
     override fun onLoadMore(refreshLayout: RefreshLayout) {
