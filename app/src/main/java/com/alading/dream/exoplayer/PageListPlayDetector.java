@@ -59,7 +59,6 @@ public class PageListPlayDetector {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dx == 0 && dy == 0) {
-                    MyLog.logD("PageListPlayDetector: onScrolled: dx == 0 && dy == 0" );
                     postAutoPlay();
                 }
                 if (playingTarget != null && playingTarget.isPlaying() && !isTargetInBounds(playingTarget)) {
@@ -83,7 +82,6 @@ public class PageListPlayDetector {
     private RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
-            MyLog.logD("PageListPlayDetector: onItemRangeInserted: " );
             postAutoPlay();
         }
     };
@@ -150,7 +148,6 @@ public class PageListPlayDetector {
     }
 
     public void onResume() {
-        MyLog.logD("PageListPlayDetector: onResume: " + (playingTarget == null));
         if (playingTarget != null) {
             playingTarget.onActive();
         }

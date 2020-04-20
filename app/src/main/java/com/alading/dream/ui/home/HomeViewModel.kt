@@ -70,7 +70,6 @@ class HomeViewModel : AbsViewModel<Feed>() {
             request.cacheStrategy(Request.CACHE_ONLY)
             request.execute(object : JsonCallback<List<Feed>>() {
                 override fun onCacheSuccess(response: ApiResponse<List<Feed>>?) {
-                    MyLog.logD("HomeViewModel::onCacheSuccess: response:${response?.body?.size}  ")
                     var dataSource = MutablePageKeyedDataSource<Feed>()
                     dataSource.data.addAll(response?.body!!)
                     var pageList = dataSource.buildNewPagedList(config)
@@ -103,7 +102,6 @@ class HomeViewModel : AbsViewModel<Feed>() {
             loadAfter.set(false)
         }
 
-        MyLog.logD("HomeViewModel: loadData: $key ----- ")
     }
 
     fun loadAfter(id: Int, loadCallback: ItemKeyedDataSource.LoadCallback<Feed>) {

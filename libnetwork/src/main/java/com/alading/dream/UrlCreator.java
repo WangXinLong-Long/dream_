@@ -16,22 +16,22 @@ public class UrlCreator {
         builder.append(url);
         if (url.indexOf("?") > 0 || url.indexOf("&") > 0) {
             builder.append("&");
-        }else {
+        } else {
             builder.append("?");
         }
 
         for (Map.Entry<String, Object> entry : params.entrySet()) {
 
             try {
-                MyLog.logD("UrlCreator::createUrlFromParams: entry.getValue():"+entry.getValue());
-                String value = URLEncoder.encode( entry.getValue().toString(),"UTF-8");
+                String value = URLEncoder.encode(entry.getValue().toString(), "UTF-8");
                 builder.append(entry.getKey()).append("=").append(value).append("&");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         }
 
-        builder.deleteCharAt(builder.length()-1);
+        builder.deleteCharAt(builder.length() - 1);
+        MyLog.logD("UrlCreator::createUrlFromParams: url:" + builder.toString());
         return builder.toString();
     }
 }

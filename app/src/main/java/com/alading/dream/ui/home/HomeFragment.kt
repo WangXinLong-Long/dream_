@@ -97,7 +97,6 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
     }
 
     override fun onResume() {
-        MyLog.logD("HomeFragment: onResume:  ----- ${playDetector == null}")
         if (parentFragment != null) {
             if (parentFragment!!.isVisible && isVisible) {
                 playDetector?.onResume()

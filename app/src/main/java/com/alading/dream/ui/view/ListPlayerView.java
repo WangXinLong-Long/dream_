@@ -141,7 +141,6 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
 
     @Override
     public void onActive() {
-        MyLog.logD("ListPlayerView: onActive: ");
         PageListPlay pageListPlay = PageListPlayManager.get(mCategory);
         PlayerView playerView = pageListPlay.playerView;
         PlayerControlView controlView = pageListPlay.controlView;

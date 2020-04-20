@@ -29,7 +29,6 @@ class MyFragment : Fragment() {
         myViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
-        MyLog.logD("MyFragment::onCreateView: myViewModel:${myViewModel}  ")
         return root
     }
 }
