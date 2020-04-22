@@ -13,7 +13,6 @@ import com.alading.dream.model.Feed
 import com.alading.dream.ui.AbsViewModel
 import com.alading.dream.ui.MutablePageKeyedDataSource
 import com.alading.dream.ui.login.UserManager
-import com.alading.libcommon.utils.MyLog
 import com.alibaba.fastjson.TypeReference
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -36,12 +35,12 @@ class HomeViewModel : AbsViewModel<Feed>() {
             params: LoadInitialParams<Int>,
             callback: LoadInitialCallback<Feed>
         ) {
-            loadData(0, callback)
+            loadData(0, params.requestedLoadSize,callback)
             witchCache = false
         }
 
         override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Feed>) {
-            loadData(params.key, callback)
+            loadData(params.key,params.requestedLoadSize, callback)
         }
 
         override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Feed>) {
@@ -55,7 +54,7 @@ class HomeViewModel : AbsViewModel<Feed>() {
 
     }
 
-    private fun loadData(key: Int, callback: ItemKeyedDataSource.LoadCallback<Feed>) {
+    private fun loadData(key: Int,  count:Int,callback: ItemKeyedDataSource.LoadCallback<Feed>) {
         if (key > 0) {
             loadAfter.set(true)
         }
@@ -63,7 +62,7 @@ class HomeViewModel : AbsViewModel<Feed>() {
             .addParam("feedType", mFeedType)
             .addParam("userId", UserManager.get().userId)
             .addParam("feedId", key)
-            .addParam("pageCount", 10)
+            .addParam("pageCount", count)
             .responseType(object : TypeReference<ArrayList<Feed>>() {}.type)
 
         if (witchCache) {
@@ -110,7 +109,7 @@ class HomeViewModel : AbsViewModel<Feed>() {
             return
         }
         ArchTaskExecutor.getIOThreadExecutor().execute {
-            loadData(id, loadCallback)
+            loadData(id, config.pageSize, loadCallback)
         }
     }
 

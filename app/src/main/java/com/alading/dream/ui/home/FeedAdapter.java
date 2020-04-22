@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.paging.PagedListAdapter;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alading.dream.BR;
+import com.alading.dream.R;
 import com.alading.dream.databinding.LayoutFeedTypeImageBinding;
 import com.alading.dream.databinding.LayoutFeedTypeVideoBinding;
 import com.alading.dream.model.Feed;
@@ -36,7 +38,7 @@ public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> 
 
             @Override
             public boolean areContentsTheSame(@NonNull Feed oldItem, @NonNull Feed newItem) {
-                return false;
+                return oldItem.equals(newItem);
             }
         });
 
@@ -48,6 +50,11 @@ public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> 
     @Override
     public int getItemViewType(int position) {
         Feed feed = getItem(position);
+        if (feed.itemType == Feed.TYPE_IMAGE_TEXT) {
+            return R.layout.layout_feed_type_image;
+        } else if (feed.itemType == Feed.TYPE_VIDEO) {
+            return R.layout.layout_feed_type_video;
+        }
         return feed.itemType;
     }
 
@@ -55,12 +62,7 @@ public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        ViewDataBinding binding = null;
-        if (viewType == Feed.TYPE_IMAGE_TEXT) {
-            binding = LayoutFeedTypeImageBinding.inflate(inflater,parent,false);
-        } else {
-            binding = LayoutFeedTypeVideoBinding.inflate(inflater,parent,false);
-        }
+        ViewDataBinding binding = DataBindingUtil.inflate(inflater, viewType, parent, false);
         return new ViewHolder(binding.getRoot(), binding);
     }
 
