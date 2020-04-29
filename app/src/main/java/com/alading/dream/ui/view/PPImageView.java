@@ -101,7 +101,7 @@ public class PPImageView extends AppCompatImageView {
             finalHeight = (int) (height / (width * 1.0f / finalWidth));
         } else {
             finalHeight = maxHeight;
-            finalWidth = (int) (width / (height * 1.0f) / finalHeight);
+            finalWidth = (int) (width / (height * 1.0f / finalHeight));
         }
 
 
