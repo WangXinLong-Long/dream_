@@ -68,8 +68,8 @@ public class ShareDialog extends AlertDialog {
 
         mShareContent = shareContent;
     }
+    public void setShareItemClickListener(View.OnClickListener listener) {
 
-    public void setShareItemClick(View.OnClickListener listener){
         mListener = listener;
     }
     private void queryShareItem() {

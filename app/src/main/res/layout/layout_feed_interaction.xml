@@ -17,7 +17,7 @@
 
         <import type="com.alading.dream.utils.StringConvert" />
 
-        <import type="com.alading.dream.ui.home.InteractionPresenter"/>
+        <import type="com.alading.dream.ui.InteractionPresenter"/>
 
         <import type="android.content.Context" />
     </data>

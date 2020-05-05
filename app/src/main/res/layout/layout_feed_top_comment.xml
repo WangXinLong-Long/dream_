@@ -12,7 +12,7 @@
             name="lifeCycleOwner"
             type="androidx.lifecycle.LifecycleOwner" />
 
-        <import type="com.alading.dream.ui.home.InteractionPresenter"/>
+        <import type="com.alading.dream.ui.InteractionPresenter"/>
         <import type="android.text.TextUtils"></import>
 
         <import type="android.view.View"></import>
