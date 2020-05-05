@@ -35,6 +35,8 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
     private String mCategory;
     private String mVideoUrl;
     private boolean isPlaying;
+    private int mWidthPx;
+    private int mHeightPx;
 
     public ListPlayerView(@NonNull Context context) {
         this(context, null);
@@ -78,7 +80,8 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
 
         mCategory = category;
         mVideoUrl = videoUrl;
-
+        mWidthPx = width;
+        mHeightPx = height;
         cover.setImageUrl(coverUrl);
 
         if (width < height) {
@@ -105,7 +108,7 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
             layoutHeight = coverHeight = (int) (height / (width * 1.0f / maxWidth));
         } else {
             layoutHeight = coverHeight = maxHeight;
-            coverWidth = (int) (width / height * 1.0f / maxHeight);
+            coverWidth = (int) (width / (height * 1.0f / maxHeight));
         }
 
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
@@ -141,47 +144,59 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
 
     @Override
     public void onActive() {
+        //视频播放,或恢复播放
+
+        //通过该View所在页面的mCategory(比如首页列表tab_all,沙发tab的tab_video,标签帖子聚合的tag_feed) 字段，
+        //取出管理该页面的Exoplayer播放器，ExoplayerView播放View,控制器对象PageListPlay
         PageListPlay pageListPlay = PageListPlayManager.get(mCategory);
         PlayerView playerView = pageListPlay.playerView;
         PlayerControlView controlView = pageListPlay.controlView;
         SimpleExoPlayer exoPlayer = pageListPlay.exoPlayer;
+        if (playerView == null) {
+            return;
+        }
 
+        //此处我们需要主动调用一次 switchPlayerView，把播放器Exoplayer和展示视频画面的View ExoplayerView相关联
+        //为什么呢？因为在列表页点击视频Item跳转到视频详情页的时候，详情页会复用列表页的播放器Exoplayer，然后和新创建的展示视频画面的View ExoplayerView相关联，达到视频无缝续播的效果
+        //如果 我们再次返回列表页，则需要再次把播放器和ExoplayerView相关联
+        pageListPlay.switchPlayerView(playerView, true);
         ViewParent parent = playerView.getParent();
         if (parent != this) {
 
+            //把展示视频画面的View添加到ItemView的容器上
             if (parent != null) {
                 ((ViewGroup) parent).removeView(playerView);
                 //还应该暂停掉列表上正在播放的那个
                 ((ListPlayerView) parent).inActive();
             }
-            ViewGroup.LayoutParams layoutParams = cover.getLayoutParams();
-            this.addView(playerView, 1, layoutParams);
+
+            ViewGroup.LayoutParams coverParams = cover.getLayoutParams();
+            this.addView(playerView, 1, coverParams);
         }
 
         ViewParent ctrlParent = controlView.getParent();
         if (ctrlParent != this) {
+            //把视频控制器 添加到ItemView的容器上
             if (ctrlParent != null) {
                 ((ViewGroup) ctrlParent).removeView(controlView);
             }
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.BOTTOM;
             this.addView(controlView, params);
-
         }
 
-
-        if (TextUtils.equals(pageListPlay.pageUrl, mVideoUrl)) {
+        //如果是同一个视频资源,则不需要从重新创建mediaSource。
+        //但需要onPlayerStateChanged 否则不会触发onPlayerStateChanged()
+        if (TextUtils.equals(pageListPlay.playUrl, mVideoUrl)) {
             onPlayerStateChanged(true, Player.STATE_READY);
         } else {
             MediaSource mediaSource = PageListPlayManager.createMediaSource(mVideoUrl);
             exoPlayer.prepare(mediaSource);
             exoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
-            //修复 点击后重新播放的bug
-            pageListPlay.pageUrl = mVideoUrl;
+            pageListPlay.playUrl = mVideoUrl;
         }
-        controlView.setVisibilityListener(this);
         controlView.show();
+        controlView.setVisibilityListener(this);
         exoPlayer.addListener(this);
         exoPlayer.setPlayWhenReady(true);
     }
@@ -220,8 +235,8 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
         PageListPlay pageListPlay = PageListPlayManager.get(mCategory);
         SimpleExoPlayer exoPlayer = pageListPlay.exoPlayer;
         if (playbackState == Player.STATE_READY && exoPlayer.getBufferedPosition() != 0) {
-            cover.setVisibility(INVISIBLE);
-            bufferView.setVisibility(INVISIBLE);
+            cover.setVisibility(GONE);
+            bufferView.setVisibility(GONE);
         } else if (playbackState == Player.STATE_BUFFERING) {
             bufferView.setVisibility(VISIBLE);
         }

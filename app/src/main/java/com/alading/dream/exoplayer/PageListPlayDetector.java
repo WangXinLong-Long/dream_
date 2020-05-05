@@ -1,6 +1,7 @@
 package com.alading.dream.exoplayer;
 
 import android.graphics.Point;
+import android.util.Pair;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -18,17 +19,18 @@ import java.util.List;
 //看看 delayAutoPlay
 public class PageListPlayDetector {
 
-    private List<IPlayTarget> mTarget = new ArrayList<>();
+    //收集一个个的能够进行视频播放的 对象，面向接口
+    private List<IPlayTarget> mTargets = new ArrayList<>();
     private RecyclerView mRecyclerView;
-    private Point rvLocation;
+    //正在播放的那个
     private IPlayTarget playingTarget;
 
     public void addTarget(IPlayTarget target) {
-        mTarget.add(target);
+        mTargets.add(target);
     }
 
     public void removeTarget(IPlayTarget target) {
-        mTarget.remove(target);
+        mTargets.remove(target);
     }
 
     public PageListPlayDetector(LifecycleOwner owner, RecyclerView recyclerView) {
@@ -39,47 +41,56 @@ public class PageListPlayDetector {
             public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
                 if (event == Lifecycle.Event.ON_DESTROY) {
                     playingTarget = null;
-//                    mTargets.clear();
-                    recyclerView.removeCallbacks(runnable);
-                    recyclerView.getAdapter().unregisterAdapterDataObserver(mDataObserver);
+                    mTargets.clear();
+                    mRecyclerView.removeCallbacks(delayAutoPlay);
+                    recyclerView.removeOnScrollListener(scrollListener);
                     owner.getLifecycle().removeObserver(this);
                 }
             }
         });
         recyclerView.getAdapter().registerAdapterDataObserver(mDataObserver);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    autoPlay();
-                }
-            }
+        recyclerView.addOnScrollListener(scrollListener);
 
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dx == 0 && dy == 0) {
-                    postAutoPlay();
-                }
+    }
+
+    RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                autoPlay();
+            }
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            if (dx == 0 && dy == 0) {
+                //时序问题。当执行了AdapterDataObserver#onItemRangeInserted  可能还没有被布局到RecyclerView上。
+                //所以此时 recyclerView.getChildCount()还是等于0的。
+                //等childView 被布局到RecyclerView上之后，会执行onScrolled（）方法
+                //并且此时 dx,dy都等于0
+                postAutoPlay();
+            } else {
+                //如果有正在播放的,且滑动时被划出了屏幕 则 停止他
                 if (playingTarget != null && playingTarget.isPlaying() && !isTargetInBounds(playingTarget)) {
                     playingTarget.inActive();
                 }
             }
-        });
+        }
+    };
+
+    private void postAutoPlay() {
+        mRecyclerView.post(delayAutoPlay);
     }
 
-    Runnable runnable = new Runnable() {
+    Runnable delayAutoPlay = new Runnable() {
         @Override
         public void run() {
             autoPlay();
         }
     };
 
-    private void postAutoPlay() {
-        mRecyclerView.post(runnable);
-    }
-
-    private RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
+    private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
             postAutoPlay();
@@ -87,18 +98,17 @@ public class PageListPlayDetector {
     };
 
     private void autoPlay() {
-
-        if (mTarget.size() <= 0 || mRecyclerView.getChildCount() <= 0) {
+        if (mTargets.size() <= 0 || mRecyclerView.getChildCount() <= 0) {
             return;
         }
-
 
         if (playingTarget != null && playingTarget.isPlaying() && isTargetInBounds(playingTarget)) {
             return;
         }
 
         IPlayTarget activeTarget = null;
-        for (IPlayTarget target : mTarget) {
+        for (IPlayTarget target : mTargets) {
+
             boolean inBounds = isTargetInBounds(target);
             if (inBounds) {
                 activeTarget = target;
@@ -107,15 +117,20 @@ public class PageListPlayDetector {
         }
 
         if (activeTarget != null) {
-            if (playingTarget != null && playingTarget.isPlaying()) {
-
+            if (playingTarget != null) {
                 playingTarget.inActive();
             }
             playingTarget = activeTarget;
-            playingTarget.onActive();
+            activeTarget.onActive();
         }
     }
 
+    /**
+     * 检测 IPlayTarget 所在的 viewGroup 是否至少还有一半的大小在屏幕内
+     *
+     * @param target
+     * @return
+     */
     private boolean isTargetInBounds(IPlayTarget target) {
         ViewGroup owner = target.getOwner();
         ensureRecyclerViewLocation();
@@ -127,16 +142,22 @@ public class PageListPlayDetector {
         owner.getLocationOnScreen(location);
 
         int center = location[1] + owner.getHeight() / 2;
-        return center >= rvLocation.x && center <= rvLocation.y;
+
+        //承载视频播放画面的ViewGroup它需要至少一半的大小 在RecyclerView上下范围内
+        return center >= rvLocation.first && center <= rvLocation.second;
     }
 
-    private Point ensureRecyclerViewLocation() {
+    private Pair<Integer, Integer> rvLocation = null;
+
+    private Pair<Integer, Integer> ensureRecyclerViewLocation() {
         if (rvLocation == null) {
             int[] location = new int[2];
             mRecyclerView.getLocationOnScreen(location);
+
             int top = location[1];
             int bottom = top + mRecyclerView.getHeight();
-            rvLocation = new Point(top, bottom);
+
+            rvLocation = new Pair(top, bottom);
         }
         return rvLocation;
     }

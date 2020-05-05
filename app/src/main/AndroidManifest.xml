@@ -35,6 +35,7 @@
         <activity
             android:name=".ui.main.MainActivity"
             android:configChanges="screenSize|orientation|keyboardHidden"
+            android:theme="@style/launcher"
             android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

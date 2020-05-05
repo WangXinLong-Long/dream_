@@ -106,7 +106,6 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
                 playDetector?.onResume()
             }
         }
-        playDetector?.onResume()
         super.onResume()
     }
 
