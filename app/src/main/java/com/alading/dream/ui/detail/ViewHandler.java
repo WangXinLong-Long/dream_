@@ -1,17 +1,25 @@
 package com.alading.dream.ui.detail;
 
+import android.view.ViewGroup;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alading.dream.R;
 import com.alading.dream.databinding.LayoutFeedDetailBottomInateractionBinding;
 import com.alading.dream.model.Comment;
 import com.alading.dream.model.Feed;
+import com.alading.libcommon.view.EmptyView;
 
 public abstract class ViewHandler {
+    private final FeedDetailViewModel feedDetailViewModel;
     protected FragmentActivity mActivity;
     protected Feed mFeed;
     protected RecyclerView mRecyclerView;
@@ -20,6 +28,7 @@ public abstract class ViewHandler {
 
     public ViewHandler(FragmentActivity activity) {
         mActivity = activity;
+        feedDetailViewModel = ViewModelProviders.of(activity).get(FeedDetailViewModel.class);
     }
 
     @CallSuper
@@ -36,5 +45,33 @@ public abstract class ViewHandler {
             }
         };
         mRecyclerView.setAdapter(listAdapter);
+        feedDetailViewModel.setItemId(mFeed.itemId);
+        feedDetailViewModel.getPageData().observe(mActivity, new Observer<PagedList<Comment>>() {
+            @Override
+            public void onChanged(PagedList<Comment> comments) {
+                listAdapter.submitList(comments);
+                handleEmpty(comments.size() > 0);
+            }
+
+
+        });
+    }
+
+    private EmptyView mEmptyView;
+
+    public void handleEmpty(boolean hasData) {
+        if (hasData) {
+            if (mEmptyView != null) {
+                listAdapter.removeHeaderView(mEmptyView);
+            }
+        } else {
+            if (mEmptyView == null) {
+                mEmptyView = new EmptyView(mActivity);
+                mEmptyView.setLayoutParams(new RecyclerView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                mEmptyView.setTitle(mActivity.getString(R.string.feed_comment_empty));
+            }
+            listAdapter.addHeaderView(mEmptyView);
+        }
     }
 }
