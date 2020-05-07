@@ -36,15 +36,13 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
             arguments?.getString("feedType")
         }
         return object : FeedAdapter(context, feedType) {
-            override fun onViewAttachedToWindow(holder: ViewHolder) {
-                super.onViewAttachedToWindow(holder)
+            override fun onViewAttachedToWindow2(holder: ViewHolder) {
                 if (holder.isVideoItem) {
                     playDetector?.addTarget(holder.getListPlayerView())
                 }
             }
 
-            override fun onViewDetachedFromWindow(holder: ViewHolder) {
-                super.onViewDetachedFromWindow(holder)
+            override fun onViewDetachedFromWindow2(holder: ViewHolder) {
                 playDetector?.removeTarget(holder.getListPlayerView())
             }
         }

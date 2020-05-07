@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,18 +20,21 @@ import com.alading.dream.R;
 import com.alading.dream.databinding.LayoutFeedTypeImageBinding;
 import com.alading.dream.databinding.LayoutFeedTypeVideoBinding;
 import com.alading.dream.model.Feed;
+import com.alading.dream.ui.InteractionPresenter;
 import com.alading.dream.ui.detail.FeedDetailActivity;
 import com.alading.dream.ui.view.ListPlayerView;
+import com.alading.libcommon.extention.AbsPagedListAdapter;
+import com.alading.libcommon.extention.LiveDataBus;
 
 import static com.alading.dream.BR.feed;
 
-public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> {
+public class FeedAdapter extends AbsPagedListAdapter<Feed, FeedAdapter.ViewHolder> {
 
     private final LayoutInflater inflater;
     private Context mContext;
     private String mCategory;
 
-    protected FeedAdapter(Context context,String category) {
+    protected FeedAdapter(Context context, String category) {
         super(new DiffUtil.ItemCallback<Feed>() {
             @Override
             public boolean areItemsTheSame(@NonNull Feed oldItem, @NonNull Feed newItem) {
@@ -49,7 +53,7 @@ public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> 
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType2(int position) {
         Feed feed = getItem(position);
         if (feed.itemType == Feed.TYPE_IMAGE_TEXT) {
             return R.layout.layout_feed_type_image;
@@ -61,24 +65,49 @@ public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> 
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder2(@NonNull ViewGroup parent, int viewType) {
 
         ViewDataBinding binding = DataBindingUtil.inflate(inflater, viewType, parent, false);
         return new ViewHolder(binding.getRoot(), binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder2(@NonNull ViewHolder holder, int position) {
+        final Feed feed = getItem(position);
         holder.bindData(getItem(position));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FeedDetailActivity.startFeedDetailActivity(mContext,getItem(position),mCategory);
+                FeedDetailActivity.startFeedDetailActivity(mContext, getItem(position), mCategory);
+                if (mFeedObserver == null) {
+                    mFeedObserver = new FeedObserver();
+                    LiveDataBus.get().with(InteractionPresenter.DATA_FROM_INTERACTION)
+                            .observe((LifecycleOwner) mContext, mFeedObserver);
+                }
+                mFeedObserver.setFeed(feed);
             }
         });
     }
 
-    public  class ViewHolder extends RecyclerView.ViewHolder {
+    private FeedObserver mFeedObserver;
+
+    private class FeedObserver implements Observer<Feed> {
+        private Feed mFeed;
+
+        @Override
+        public void onChanged(Feed newOne) {
+            if (mFeed.id != newOne.id) return;
+            mFeed.author = newOne.author;
+            mFeed.ugc = newOne.ugc;
+            mFeed.notifyChange();
+        }
+
+        public void setFeed(Feed feed) {
+            this.mFeed = feed;
+        }
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private ViewDataBinding mBinding;
         public ListPlayerView listPlayerView;
         public ImageView feedImage;
