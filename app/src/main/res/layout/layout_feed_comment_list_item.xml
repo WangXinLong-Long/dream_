@@ -25,8 +25,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <com.mooc.ppjoke.view.PPImageView
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/dp_10">
+        <com.alading.dream.ui.view.PPImageView
             android:id="@+id/author_avatar"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"

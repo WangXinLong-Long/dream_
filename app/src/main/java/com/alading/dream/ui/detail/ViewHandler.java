@@ -1,5 +1,6 @@
 package com.alading.dream.ui.detail;
 
+import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
@@ -41,7 +42,7 @@ public abstract class ViewHandler {
             @Override
             public void onCurrentListChanged(@Nullable PagedList<Comment> previousList, @Nullable PagedList<Comment> currentList) {
                 boolean empty = currentList.size() <= 0;
-//                handleEmpty(!empty);
+                handleEmpty(!empty);
             }
         };
         mRecyclerView.setAdapter(listAdapter);
@@ -73,5 +74,24 @@ public abstract class ViewHandler {
             }
             listAdapter.addHeaderView(mEmptyView);
         }
+    }
+
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (commentDialog != null && commentDialog.isAdded()) {
+//            commentDialog.onActivityResult(requestCode, resultCode, data);
+//        }
+    }
+
+    public void onPause() {
+
+    }
+
+    public void onResume() {
+
+    }
+
+    public void onBackPressed() {
+
     }
 }

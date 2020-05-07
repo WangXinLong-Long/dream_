@@ -19,6 +19,7 @@ import com.alading.dream.R;
 import com.alading.dream.databinding.LayoutFeedTypeImageBinding;
 import com.alading.dream.databinding.LayoutFeedTypeVideoBinding;
 import com.alading.dream.model.Feed;
+import com.alading.dream.ui.detail.FeedDetailActivity;
 import com.alading.dream.ui.view.ListPlayerView;
 
 import static com.alading.dream.BR.feed;
@@ -69,6 +70,12 @@ public class FeedAdapter extends PagedListAdapter<Feed, FeedAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bindData(getItem(position));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FeedDetailActivity.startFeedDetailActivity(mContext,getItem(position),mCategory);
+            }
+        });
     }
 
     public  class ViewHolder extends RecyclerView.ViewHolder {

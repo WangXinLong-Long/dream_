@@ -14,7 +14,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.detail.FeedDetailActivity">
+        android:orientation="vertical">
 
         <FrameLayout
             android:id="@+id/title_layout"
@@ -45,7 +45,7 @@
                 android:visibility="gone"
                 app:feed="@{feed}"
                 app:fullscreen="@{false}"
-                app:leftMargin="@{PixUtils.dp2px(60)}">/</include>
+                app:leftMargin="@{PixUtils.dp2px(60)}"/>
 
             <View
                 android:layout_width="match_parent"

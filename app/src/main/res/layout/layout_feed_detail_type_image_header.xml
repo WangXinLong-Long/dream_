@@ -8,18 +8,19 @@
             name="feed"
             type="com.alading.dream.model.Feed" />
 
-        <import type="com.alading.libcommon.utils.PixUtils"></import>
+        <import type="com.alading.libcommon.utils.PixUtils"/>
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_white"
         android:orientation="vertical">
 
         <include
             layout="@layout/layout_feed_detail_author_info"
             app:feed="@{feed}"
-            app:fullScreen="@{false}"
+            app:fullscreen="@{false}"
             app:leftMargin="@{PixUtils.dp2px(16)}" />
 
         <include

@@ -60,16 +60,17 @@ public class FeedCommentAdapter extends AbsPagedListAdapter<Comment, FeedComment
 
         public void bindData(Comment item) {
             mBinding.setComment(item);
+            boolean self = item.author == null ? false : UserManager.get().getUserId() == item.author.userId;
             mBinding.labelAuthor.setVisibility(
-                    UserManager.get().getUserId() == item.author.userId ? View.VISIBLE : View.GONE);
+                    self ? View.VISIBLE : View.GONE);
             mBinding.commentDelete.setVisibility(
-                    UserManager.get().getUserId() == item.author.userId ? View.VISIBLE : View.GONE);
+                    self ? View.VISIBLE : View.GONE);
             if (!TextUtils.isEmpty(item.imageUrl)) {
                 mBinding.commentCover.setVisibility(View.VISIBLE);
                 mBinding.commentCover.bindData( item.width, item.height, 0,
                         PixUtils.dp2px(200), PixUtils.dp2px(200), item.imageUrl);
 
-                if (!TextUtils.isEmpty(item.imageUrl)){
+                if (!TextUtils.isEmpty(item.videoUrl)){
                     mBinding.videoIcon.setVisibility(View.VISIBLE);
                 }else {
                     mBinding.videoIcon.setVisibility(View.GONE);
