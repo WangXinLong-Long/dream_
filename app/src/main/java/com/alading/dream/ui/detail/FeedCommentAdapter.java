@@ -7,11 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.paging.ItemKeyedDataSource;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alading.dream.databinding.LayoutFeedCommentListItemBinding;
 import com.alading.dream.model.Comment;
+import com.alading.dream.ui.InteractionPresenter;
+import com.alading.dream.ui.MutableItemKeyedDataSource;
 import com.alading.dream.ui.login.UserManager;
 import com.alading.libcommon.extention.AbsPagedListAdapter;
 import com.alading.libcommon.utils.PixUtils;
@@ -48,6 +53,47 @@ public class FeedCommentAdapter extends AbsPagedListAdapter<Comment, FeedComment
     protected void onBindViewHolder2(ViewHolder holder, int position) {
         Comment item = getItem(position);
         holder.bindData(item);
+
+        holder.mBinding.commentDelete.setOnClickListener(v ->
+                InteractionPresenter.deleteFeedComment(mContext, item.itemId, item.commentId)
+                        .observe((LifecycleOwner) mContext, success -> {
+                            if (success) {
+                                deleteAndRefreshList(item);
+                            }
+                        }));
+    }
+
+    public void addAndRefreshList(Comment comment) {
+        PagedList<Comment> currentList = getCurrentList();
+        MutableItemKeyedDataSource<Integer,Comment> mutableItemKeyedDataSource = new MutableItemKeyedDataSource<Integer, Comment>((ItemKeyedDataSource) currentList.getDataSource()) {
+            @NonNull
+            @Override
+            public Integer getKey(@NonNull Comment item) {
+                return item.id;
+            }
+        };
+        mutableItemKeyedDataSource.data.add(comment);
+        mutableItemKeyedDataSource.data.addAll(currentList);
+        PagedList<Comment> pagedList = mutableItemKeyedDataSource.buildNewPagedList(currentList.getConfig());
+        submitList(pagedList);
+    }
+
+    public void deleteAndRefreshList(Comment item) {
+        MutableItemKeyedDataSource<Integer, Comment> dataSource = new MutableItemKeyedDataSource<Integer, Comment>((ItemKeyedDataSource) getCurrentList().getDataSource()) {
+            @NonNull
+            @Override
+            public Integer getKey(@NonNull Comment item) {
+                return item.id;
+            }
+        };
+        PagedList<Comment> currentList = getCurrentList();
+        for (Comment comment : currentList) {
+            if (comment != item) {
+                dataSource.data.add(comment);
+            }
+        }
+        PagedList<Comment> pagedList = dataSource.buildNewPagedList(getCurrentList().getConfig());
+        submitList(pagedList);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

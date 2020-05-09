@@ -1,6 +1,7 @@
 package com.alading.dream.ui.detail;
 
 import android.content.Intent;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
@@ -26,6 +27,8 @@ public abstract class ViewHandler {
     protected RecyclerView mRecyclerView;
     protected LayoutFeedDetailBottomInateractionBinding mInateractionBinding;
     protected FeedCommentAdapter listAdapter;
+    private CommentDialog commentDialog;
+
 
     public ViewHandler(FragmentActivity activity) {
         mActivity = activity;
@@ -56,6 +59,26 @@ public abstract class ViewHandler {
 
 
         });
+        mInateractionBinding.inputView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCommentDialog();
+            }
+        });
+    }
+
+    private void showCommentDialog() {
+        if (commentDialog == null){
+            commentDialog = CommentDialog.newInstance(mFeed.itemId);
+        }
+        commentDialog.setCommentAddListener(new CommentDialog.commentAddListener() {
+            @Override
+            public void onAddComment(Comment comment) {
+                handleEmpty(true);
+                listAdapter.addAndRefreshList(comment);
+            }
+        });
+        commentDialog.show(mActivity.getSupportFragmentManager(),"comment_dialog");
     }
 
     private EmptyView mEmptyView;
