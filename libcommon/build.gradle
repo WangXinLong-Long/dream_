@@ -91,10 +91,10 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
     //camera
-    api 'androidx.camera:camera-core:1.0.0-beta01'
-    api 'androidx.camera:camera-camera2:1.0.0-beta01'
-    api 'androidx.camera:camera-view:1.0.0-alpha08'
-    api 'androidx.camera:camera-extensions:1.0.0-alpha08'
+    api 'androidx.camera:camera-core:1.0.0-beta03'
+    api 'androidx.camera:camera-camera2:1.0.0-beta03'
+    api 'androidx.camera:camera-view:1.0.0-alpha10'
+    api 'androidx.camera:camera-extensions:1.0.0-alpha10'
 
     //workmanager
     api 'androidx.work:work-runtime:2.3.4'
@@ -103,7 +103,7 @@ dependencies {
     api 'com.github.chrisbanes:PhotoView:2.3.0'
 
     //aliyun oss
-    api 'com.aliyun.dpa:oss-android-sdk:+'
+    api 'com.aliyun.dpa:oss-android-sdk:2.5.0'
 
     //fastjson解析
     api 'com.alibaba:fastjson:1.2.59'
