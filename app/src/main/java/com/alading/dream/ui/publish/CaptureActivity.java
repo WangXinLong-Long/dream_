@@ -26,7 +26,7 @@ public class CaptureActivity extends AppCompatActivity {
     private static final String[] PERMISSIONS = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int PERMISSION_CODE = 1000;
     private ArrayList<String> deniedPermission = new ArrayList<>();
-
+    Integer lensFacing = CameraSelector.LENS_FACING_BACK;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +73,8 @@ public class CaptureActivity extends AppCompatActivity {
     }
 
     private void bindCameraX() {
-//        val cameraSelector = new  CameraSelector.Builder().requireLensFacing(lensFacing).build()
+
+//        ProcessCameraProvider.getInstance(requireContext())
 //        new Preview.Builder()
 //
 //                // We request aspect ratio but no resolution
