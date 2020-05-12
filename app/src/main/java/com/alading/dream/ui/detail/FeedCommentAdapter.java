@@ -1,5 +1,6 @@
 package com.alading.dream.ui.detail;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import com.alading.dream.model.Comment;
 import com.alading.dream.ui.InteractionPresenter;
 import com.alading.dream.ui.MutableItemKeyedDataSource;
 import com.alading.dream.ui.login.UserManager;
+import com.alading.dream.ui.publish.PreviewActivity;
 import com.alading.libcommon.extention.AbsPagedListAdapter;
 import com.alading.libcommon.utils.PixUtils;
 
@@ -61,6 +63,14 @@ public class FeedCommentAdapter extends AbsPagedListAdapter<Comment, FeedComment
                                 deleteAndRefreshList(item);
                             }
                         }));
+
+        holder.mBinding.commentCover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean isVideo = item.commentType ==Comment.COMMENT_TYPE_VIDEO;
+                PreviewActivity.startActivityForResult((Activity) mContext, isVideo ? item.videoUrl : item.imageUrl, isVideo, null);
+            }
+        });
     }
 
     public void addAndRefreshList(Comment comment) {
