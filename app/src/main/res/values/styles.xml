@@ -41,4 +41,11 @@
     <style name="feedDetail" parent="AppTheme">
         <item name="android:windowFullscreen">true</item>
     </style>
+
+    <style name="capture" parent="AppTheme">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/black</item>
+    </style>
+
+
 </resources>

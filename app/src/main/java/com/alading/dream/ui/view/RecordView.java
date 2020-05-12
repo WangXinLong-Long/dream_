@@ -166,4 +166,6 @@ public class RecordView extends View implements View.OnClickListener, View.OnLon
             canvas.drawCircle(width / 2, height / 2, radius, fillPaint);
         }
     }
+
+
 }
