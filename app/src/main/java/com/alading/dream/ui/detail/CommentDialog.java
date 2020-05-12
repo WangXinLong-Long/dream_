@@ -49,6 +49,7 @@ public class CommentDialog extends AppCompatDialogFragment implements View.OnCli
     private String coverUrl;
     private String fileUrl;
     private LoadingDialog loadingDialog;
+
     public static CommentDialog newInstance(long itemId) {
 
         Bundle args = new Bundle();
@@ -123,25 +124,25 @@ public class CommentDialog extends AppCompatDialogFragment implements View.OnCli
                 .addParam("userId", UserManager.get().getUserId())
                 .addParam("itemId", itemId)
                 .addParam("commentText", commentText)
-//                .addParam("image_url", isVideo ? coverUrl : fileUrl)
-//                .addParam("video_url", isVideo ? fileUrl : null)
-//                .addParam("width", width)
-//                .addParam("height", height)
+                .addParam("image_url", isVideo ? coverUrl : fileUrl)
+                .addParam("video_url", isVideo ? fileUrl : null)
+                .addParam("width", width)
+                .addParam("height", height)
                 .execute(new JsonCallback<Comment>() {
                     @Override
                     public void onSuccess(ApiResponse<Comment> response) {
                         onCommentSuccess(response.body);
-//                        dismissLoadingDialog();
+                        dismissLoadingDialog();
                     }
 
                     @Override
                     public void onError(ApiResponse<Comment> response) {
-                        Log.e(TAG, "onError: "+response.msg );
                         showToast("评论失败:" + response.msg);
-//                        dismissLoadingDialog();
+                        dismissLoadingDialog();
                     }
                 });
     }
+
     private void onCommentSuccess(Comment body) {
         showToast("评论发布成功");
         ArchTaskExecutor.getMainThreadExecutor().execute(() -> {
@@ -151,6 +152,7 @@ public class CommentDialog extends AppCompatDialogFragment implements View.OnCli
             dismiss();
         });
     }
+
     private void showToast(String s) {
         //showToast几个可能会出现在异步线程调用
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -203,9 +205,11 @@ public class CommentDialog extends AppCompatDialogFragment implements View.OnCli
                     int remain = count.decrementAndGet();
                     coverUrl = FileUploadManager.upload(coverPath);
                     if (remain <= 0) {
-                        if (!TextUtils.isEmpty(fileUrl) && !TextUtils.isEmpty(coverUrl)) {
+                        if (!TextUtils.isEmpty(fileUrl)
+                                && !TextUtils.isEmpty(coverUrl)
+                        ) {
                             publish();
-                        } else {
+                        }else {
                             dismissLoadingDialog();
                             showToast(getString(R.string.file_upload_failed));
                         }

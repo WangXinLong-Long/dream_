@@ -50,7 +50,7 @@ import java.util.Map;
 public class CaptureActivity extends AppCompatActivity {
     public static final int REQ_CAPTURE = 10001;
     private ActivityLayoutCaptureBinding mBinding;
-    private static final String[] PERMISSIONS = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static final String[] PERMISSIONS = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
     private static final int PERMISSION_CODE = 1000;
     private ArrayList<String> deniedPermission = new ArrayList<>();
 
@@ -85,7 +85,7 @@ public class CaptureActivity extends AppCompatActivity {
             @Override
             public void onClick() {
                 takingPicture = true;
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), System.currentTimeMillis() + ".jpeg");
+                File file = new File(getExternalCacheDir(), System.currentTimeMillis() + ".jpeg");
                 mBinding.captureTips.setVisibility(View.INVISIBLE);
                 imageCapture.takePicture(file, new ImageCapture.OnImageSavedListener() {
                     @Override
@@ -104,7 +104,7 @@ public class CaptureActivity extends AppCompatActivity {
             @Override
             public void onLongClick() {
                 takingPicture = false;
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), System.currentTimeMillis() + ".mp4");
+                File file = new File(getExternalCacheDir(), System.currentTimeMillis() + ".mp4");
                 videoCapture.startRecording(file, new VideoCapture.OnVideoSavedListener() {
                     @Override
                     public void onVideoSaved(File file) {

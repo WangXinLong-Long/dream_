@@ -53,7 +53,7 @@ public class RecordView extends View implements View.OnClickListener, View.OnLon
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordView, defStyleAttr, defStyleRes);
 
         radius = typedArray.getDimensionPixelOffset(R.styleable.RecordView_radius, 0);
-        maxDuration = typedArray.getDimensionPixelOffset(R.styleable.RecordView_duration, 10);
+        maxDuration = typedArray.getInteger(R.styleable.RecordView_duration, 10);
         progressWidth = typedArray.getDimensionPixelOffset(R.styleable.RecordView_progress_width, PixUtils.dp2px(3));
         fillColor = typedArray.getColor(R.styleable.RecordView_fill_color, Color.WHITE);
         progressColor = typedArray.getColor(R.styleable.RecordView_progress_color, Color.RED);
@@ -155,11 +155,12 @@ public class RecordView extends View implements View.OnClickListener, View.OnLon
         int height = getHeight();
         if (isRecording) {
             canvas.drawCircle(width / 2, height / 2, width / 2, fillPaint);
-            int left = 0;
-            int top = 0;
-            int right = width;
-            int bottom = height;
-            float sweepAngle = progressValue / progressMaxValue * 360;
+
+            int left = progressWidth / 2;
+            int top = progressWidth / 2;
+            int right = width - progressWidth / 2;
+            int bottom = height - progressWidth / 2;
+            float sweepAngle = (progressValue * 1.0f / progressMaxValue) * 360;
             canvas.drawArc(left, top, right, bottom, -90, sweepAngle, false, progressPaint);
         } else {
 

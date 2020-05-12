@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -95,6 +96,7 @@ public class PreviewActivity extends AppCompatActivity  implements View.OnClickL
         ProgressiveMediaSource.Factory factory = new ProgressiveMediaSource.Factory(new DefaultDataSourceFactory(this, Util.getUserAgent(this, getPackageName())));
         ProgressiveMediaSource mediaSource = factory.createMediaSource(uri);
         player.prepare(mediaSource);
+        player.setRepeatMode(Player.REPEAT_MODE_ONE);
         player.setPlayWhenReady(true);
         mPreviewBinding.playerView.setPlayer(player);
     }

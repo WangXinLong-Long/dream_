@@ -8,6 +8,8 @@ import androidx.arch.core.executor.ArchTaskExecutor;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.alading.libcommon.global.AppGlobals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +35,7 @@ public class FileUtils {
                 if (frame != null) {
                     //压缩到200k以下，再存储到本地文件中
                     byte[] bytes = compressBitmap(frame, 200);
-                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), System.currentTimeMillis() + ".jpeg");
+                    File file = new File(AppGlobals.getApplication().getExternalCacheDir(), System.currentTimeMillis() + ".jpeg");
                     try {
                         file.createNewFile();
                         fos = new FileOutputStream(file);
