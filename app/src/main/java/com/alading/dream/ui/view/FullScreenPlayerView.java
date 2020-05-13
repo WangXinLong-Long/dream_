@@ -55,7 +55,7 @@ public class FullScreenPlayerView extends ListPlayerView {
         layoutParams.height = maxHeight;
         setLayoutParams(layoutParams);
 
-        FrameLayout.LayoutParams coverLayoutParams = (FrameLayout.LayoutParams) cover.getLayoutParams();
+        FrameLayout.LayoutParams coverLayoutParams = (LayoutParams) cover.getLayoutParams();
         coverLayoutParams.width = (int) (width/(height*1.0f/maxHeight));
         coverLayoutParams.height = maxHeight;
         coverLayoutParams.gravity = Gravity.CENTER;
@@ -64,27 +64,21 @@ public class FullScreenPlayerView extends ListPlayerView {
 
     @Override
     public void onActive() {
-        super.onActive();
         PageListPlay pageListPlay = PageListPlayManager.get(mCategory);
-        PlayerView playerView = exoPlayerView;
+        PlayerView playerView = exoPlayerView;//pageListPlay.playerView;
         PlayerControlView controlView = pageListPlay.controlView;
         SimpleExoPlayer exoPlayer = pageListPlay.exoPlayer;
         if (playerView == null) {
             return;
         }
 
-        //此处我们需要主动调用一次 switchPlayerView，把播放器Exoplayer和展示视频画面的View ExoplayerView相关联
-        //为什么呢？因为在列表页点击视频Item跳转到视频详情页的时候，详情页会复用列表页的播放器Exoplayer，然后和新创建的展示视频画面的View ExoplayerView相关联，达到视频无缝续播的效果
-        //如果 我们再次返回列表页，则需要再次把播放器和ExoplayerView相关联
+        //主动关联播放器与exoplayerview
         pageListPlay.switchPlayerView(playerView, true);
         ViewParent parent = playerView.getParent();
         if (parent != this) {
 
-            //把展示视频画面的View添加到ItemView的容器上
             if (parent != null) {
                 ((ViewGroup) parent).removeView(playerView);
-                //还应该暂停掉列表上正在播放的那个
-                ((ListPlayerView) parent).inActive();
             }
 
             ViewGroup.LayoutParams coverParams = cover.getLayoutParams();
@@ -93,7 +87,6 @@ public class FullScreenPlayerView extends ListPlayerView {
 
         ViewParent ctrlParent = controlView.getParent();
         if (ctrlParent != this) {
-            //把视频控制器 添加到ItemView的容器上
             if (ctrlParent != null) {
                 ((ViewGroup) ctrlParent).removeView(controlView);
             }
@@ -125,4 +118,29 @@ public class FullScreenPlayerView extends ListPlayerView {
         PageListPlay pageListPlay = PageListPlayManager.get(mCategory);
         pageListPlay.switchPlayerView(exoPlayerView,false);
     }
+
+    @Override
+    public void setLayoutParams(ViewGroup.LayoutParams params) {
+        if (mHeightPx>mWidthPx){
+            int layoutWidth = params.width;
+            int layoutHeight = params.height;
+            ViewGroup.LayoutParams coverLayoutParams = cover.getLayoutParams();
+            coverLayoutParams.width = (int)(mWidthPx/mHeightPx*1.0f/layoutHeight);
+            coverLayoutParams.height = layoutHeight;
+
+            cover.setLayoutParams(coverLayoutParams);
+            if (exoPlayerView!=null){
+                ViewGroup.LayoutParams layoutParams = exoPlayerView.getLayoutParams();
+                if (layoutParams!=null && layoutParams.width>0 && layoutParams.height>0){
+                    float scalex = coverLayoutParams.width * 1.0f / layoutParams.width;
+                    float scaley = coverLayoutParams.height * 1.0f / layoutParams.height;
+                    exoPlayerView.setScaleX(scalex);
+                    exoPlayerView.setScaleY(scaley);
+                }
+            }
+        }
+        super.setLayoutParams(params);
+    }
+
+
 }

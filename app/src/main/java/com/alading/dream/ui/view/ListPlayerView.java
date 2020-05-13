@@ -35,8 +35,8 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
     public String mCategory;
     public String mVideoUrl;
     private boolean isPlaying;
-    private int mWidthPx;
-    private int mHeightPx;
+    protected int mWidthPx;
+    protected int mHeightPx;
 
     public ListPlayerView(@NonNull Context context) {
         this(context, null);
@@ -244,5 +244,10 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
         isPlaying = playbackState == Player.STATE_READY && exoPlayer.getBufferedPosition() != 0 && playWhenReady;
 
         playBtn.setImageResource(isPlaying ? R.drawable.icon_video_pause : R.drawable.icon_video_play);
+    }
+
+    public View getPlayController() {
+        PageListPlay listPlay = PageListPlayManager.get(mCategory);
+        return listPlay.controlView;
     }
 }
