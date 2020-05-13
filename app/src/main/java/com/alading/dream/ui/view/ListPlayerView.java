@@ -201,20 +201,26 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
         exoPlayer.setPlayWhenReady(true);
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        isPlaying = false;
-        bufferView.setVisibility(GONE);
-        cover.setVisibility(VISIBLE);
-        playBtn.setVisibility(VISIBLE);
-        playBtn.setImageResource(R.drawable.icon_video_play);
-    }
+    //TODO:修复有视频封面的bug
+//    @Override
+//    protected void onAttachedToWindow() {
+//        super.onAttachedToWindow();
+//        isPlaying = false;
+//        bufferView.setVisibility(GONE);
+//        cover.setVisibility(VISIBLE);
+//        playBtn.setVisibility(VISIBLE);
+//        playBtn.setImageResource(R.drawable.icon_video_play);
+//    }
 
     @Override
     public void inActive() {
         PageListPlay pageListPlay = PageListPlayManager.get(mCategory);
+        if (pageListPlay.exoPlayer == null || pageListPlay.controlView == null || pageListPlay.exoPlayer == null)
+            return;
         pageListPlay.exoPlayer.setPlayWhenReady(false);
+        pageListPlay.controlView.setVisibilityListener(null);
+        pageListPlay.exoPlayer.removeListener(this);
+        cover.setVisibility(VISIBLE);
         playBtn.setVisibility(VISIBLE);
         playBtn.setImageResource(R.drawable.icon_video_play);
     }
@@ -234,7 +240,7 @@ public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerCo
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         PageListPlay pageListPlay = PageListPlayManager.get(mCategory);
         SimpleExoPlayer exoPlayer = pageListPlay.exoPlayer;
-        if (playbackState == Player.STATE_READY && exoPlayer.getBufferedPosition() != 0) {
+        if (playbackState == Player.STATE_READY && exoPlayer.getBufferedPosition() != 0 && playWhenReady) {
             cover.setVisibility(GONE);
             bufferView.setVisibility(GONE);
         } else if (playbackState == Player.STATE_BUFFERING) {

@@ -35,7 +35,12 @@ public class VideoViewHandler extends ViewHandler {
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) authorInfoView.getLayoutParams();
         layoutParams.setBehavior(new ViewAnchorBehavior(R.id.player_view));
 
-
+        mVideoBinding.actionClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mActivity.finish();
+            }
+        });
         CoordinatorLayout.LayoutParams playerViewLayoutParams = (CoordinatorLayout.LayoutParams) playerView.getLayoutParams();
         ViewZoomBehavior behavior = (ViewZoomBehavior) playerViewLayoutParams.getBehavior();
         behavior.setViewZoomCallback(new ViewZoomBehavior.ViewZoomCallback() {

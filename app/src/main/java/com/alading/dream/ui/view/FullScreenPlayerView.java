@@ -125,7 +125,8 @@ public class FullScreenPlayerView extends ListPlayerView {
             int layoutWidth = params.width;
             int layoutHeight = params.height;
             ViewGroup.LayoutParams coverLayoutParams = cover.getLayoutParams();
-            coverLayoutParams.width = (int)(mWidthPx/mHeightPx*1.0f/layoutHeight);
+            //TODO:修复 滑动 后无法显示view的问题
+            coverLayoutParams.width = (int) (mWidthPx / (mHeightPx * 1.0f / layoutHeight));
             coverLayoutParams.height = layoutHeight;
 
             cover.setLayoutParams(coverLayoutParams);

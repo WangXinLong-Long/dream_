@@ -54,7 +54,7 @@ public class ViewZoomBehavior extends CoordinatorLayout.Behavior<FullScreenPlaye
     @Override
     public boolean onInterceptTouchEvent(@NonNull CoordinatorLayout parent, @NonNull FullScreenPlayerView child, @NonNull MotionEvent ev) {
         if (!canFullscreen || viewDragHelper == null){
-            super.onInterceptTouchEvent(parent, child, ev);
+          return   super.onInterceptTouchEvent(parent, child, ev);
         }
         return viewDragHelper.shouldInterceptTouchEvent(ev);
     }
