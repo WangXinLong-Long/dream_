@@ -1,6 +1,7 @@
 package com.alading.dream.ui.detail;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +35,8 @@ import com.alading.libcommon.dialog.LoadingDialog;
 import com.alading.libcommon.global.AppGlobals;
 import com.alading.libcommon.utils.FileUploadManager;
 import com.alading.libcommon.utils.FileUtils;
+import com.alading.libcommon.utils.PixUtils;
+import com.alading.libcommon.view.ViewHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,6 +53,7 @@ public class CommentDialog extends AppCompatDialogFragment implements View.OnCli
     private String coverUrl;
     private String fileUrl;
     private LoadingDialog loadingDialog;
+    private View content;
 
     public static CommentDialog newInstance(long itemId) {
 
@@ -64,21 +69,48 @@ public class CommentDialog extends AppCompatDialogFragment implements View.OnCli
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Window window = getDialog().getWindow();
         window.setWindowAnimations(0);
-
-        mBinding = LayoutCommentDialogBinding.inflate(inflater, ((ViewGroup) window.findViewById(android.R.id.content)), false);
+        content = window.findViewById(android.R.id.content);
+        mBinding = LayoutCommentDialogBinding.inflate(inflater, ((ViewGroup)content ), false);
         mBinding.commentVideo.setOnClickListener(this);
         mBinding.commentDelete.setOnClickListener(this);
         mBinding.commentSend.setOnClickListener(this);
-
+        content.setOnClickListener(this);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
-        this.itemId = getArguments().getLong(KEY_ITEM_ID);
+        this.itemId = getArguments().getLong(KEY_ITEM_ID) ;
 
+
+        ViewHelper.setViewOutline(mBinding.getRoot(), PixUtils.dp2px(10), ViewHelper.RADIUS_TOP);
+
+        mBinding.getRoot().post(() -> showSoftInputMethod());
+
+        dismissWhenPressBack();
 
         return mBinding.getRoot();
     }
 
+    private void dismissWhenPressBack() {
+        mBinding.inputView.setOnBackKeyEventListener(() -> {
+            mBinding.inputView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dismiss();
+                }
+            }, 200);
+            return true;
+        });
+    }
+
+
+    private void showSoftInputMethod() {
+        mBinding.inputView.setFocusable(true);
+        mBinding.inputView.setFocusableInTouchMode(true);
+        //请求获得焦点
+        mBinding.inputView.requestFocus();
+        InputMethodManager manager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        manager.showSoftInput(mBinding.inputView, 0);
+    }
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.comment_send) {
@@ -95,6 +127,8 @@ public class CommentDialog extends AppCompatDialogFragment implements View.OnCli
 
             mBinding.commentVideo.setEnabled(true);
             mBinding.commentVideo.setAlpha(255);
+        }else {
+            dismiss();
         }
     }
 
