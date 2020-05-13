@@ -30,10 +30,10 @@ import com.google.android.exoplayer2.ui.PlayerView;
 public class ListPlayerView extends FrameLayout implements IPlayTarget, PlayerControlView.VisibilityListener, Player.EventListener {
 
     private View bufferView;
-    private PPImageView cover, blur;
+    public PPImageView cover, blur;
     private ImageView playBtn;
-    private String mCategory;
-    private String mVideoUrl;
+    public String mCategory;
+    public String mVideoUrl;
     private boolean isPlaying;
     private int mWidthPx;
     private int mHeightPx;

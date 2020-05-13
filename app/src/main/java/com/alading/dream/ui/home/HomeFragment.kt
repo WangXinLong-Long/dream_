@@ -8,7 +8,6 @@ import com.alading.dream.exoplayer.PageListPlayDetector
 import com.alading.dream.model.Feed
 import com.alading.dream.ui.AbsListFragment
 import com.alading.dream.ui.MutablePageKeyedDataSource
-import com.alading.libcommon.utils.MyLog
 import com.example.libnavannotation.FragmentDestination
 import com.scwang.smartrefresh.layout.api.RefreshLayout
 
@@ -17,9 +16,10 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
 
     var playDetector: PageListPlayDetector? = null
     var feedType: String? = null
+    private var shouldPause = true
 
     companion object {
-        fun newInstance(feedType: String?): HomeFragment  {
+        fun newInstance(feedType: String?): HomeFragment {
             val args = Bundle()
             args.putString("feedType", feedType)
             val fragment = HomeFragment()
@@ -44,6 +44,12 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
 
             override fun onViewDetachedFromWindow2(holder: ViewHolder) {
                 playDetector?.removeTarget(holder.getListPlayerView())
+            }
+
+            override fun onStartFeedDetailActivity(feed: Feed?) {
+                super.onStartFeedDetailActivity(feed)
+                val isVideo = feed!!.itemType == Feed.TYPE_VIDEO
+                shouldPause = !isVideo
             }
         }
     }
@@ -89,12 +95,14 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
 
 
     override fun onPause() {
-        playDetector?.onPause()
+        if (shouldPause)
+            playDetector?.onPause()
         super.onPause()
 
     }
 
     override fun onResume() {
+        shouldPause = true
         if (parentFragment != null) {
             if (parentFragment!!.isVisible && isVisible) {
                 playDetector?.onResume()
