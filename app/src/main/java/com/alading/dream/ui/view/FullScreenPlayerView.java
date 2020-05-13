@@ -59,7 +59,7 @@ public class FullScreenPlayerView extends ListPlayerView {
         coverLayoutParams.width = (int) (width/(height*1.0f/maxHeight));
         coverLayoutParams.height = maxHeight;
         coverLayoutParams.gravity = Gravity.CENTER;
-        cover.setLayoutParams(layoutParams);
+        cover.setLayoutParams(coverLayoutParams);
     }
 
     @Override
