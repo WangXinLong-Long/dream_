@@ -34,7 +34,6 @@ public class TagListFragment extends AbsListFragment<TagList, TagListViewModel> 
     @Override
     public PagedListAdapter getAdapter() {
         tagType = getArguments().getString(KEY_TAG_TYPE);
-        mViewModel.setTagType(tagType);
         TagListAdapter tagListAdapter = new TagListAdapter(getContext());
         return tagListAdapter;
     }

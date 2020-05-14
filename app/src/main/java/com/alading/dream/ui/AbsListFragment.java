@@ -38,7 +38,7 @@ public abstract class AbsListFragment<T, VM extends AbsViewModel<T>> extends Fra
     protected RecyclerView mRecyclerView;
     protected SmartRefreshLayout mRefreshLayout;
     protected EmptyView mEmptyView;
-    private PagedListAdapter<T, RecyclerView.ViewHolder> adapter;
+    protected PagedListAdapter<T, RecyclerView.ViewHolder> adapter;
     protected VM mViewModel;
     protected DividerItemDecoration decoration;
 

@@ -31,8 +31,8 @@ import static com.alading.dream.BR.feed;
 public class FeedAdapter extends AbsPagedListAdapter<Feed, FeedAdapter.ViewHolder> {
 
     private final LayoutInflater inflater;
-    private Context mContext;
-    private String mCategory;
+    protected Context mContext;
+    protected String mCategory;
 
     protected FeedAdapter(Context context, String category) {
         super(new DiffUtil.ItemCallback<Feed>() {

@@ -82,4 +82,16 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         navController?.navigate(item.itemId)
         return !TextUtils.isEmpty(item.title)
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        var currentPageId = navController?.currentDestination?.id
+        var homeDestId = navController?.graph?.startDestination
+        if (currentPageId != homeDestId) {
+            nav_view.selectedItemId = homeDestId!!
+            return
+        }
+
+        finish()
+    }
 }

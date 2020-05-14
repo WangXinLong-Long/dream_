@@ -10,7 +10,6 @@ import com.alading.dream.ui.sofa.SofaFragment
 import com.alading.dream.utils.AppConfig
 import com.example.libnavannotation.FragmentDestination
 import kotlinx.android.synthetic.main.fragment_sofa.*
-import java.util.*
 
 @FragmentDestination(pageUrl = "main/tabs/find")
 class FindFragment : SofaFragment() {
@@ -29,7 +28,7 @@ class FindFragment : SofaFragment() {
         var tagType = childFragment.arguments?.getString(TagListFragment.KEY_TAG_TYPE)
         if (TextUtils.equals(tagType,"onlyFollow")){
             ViewModelProviders.of(childFragment).get(TagListViewModel::class.java).switchTabLiveData.observe(this,
-                Observer<Objects> {
+                Observer<Object> {
                     view_pager.currentItem = 1
                 })
         }
