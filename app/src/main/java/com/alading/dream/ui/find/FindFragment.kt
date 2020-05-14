@@ -1,34 +1,37 @@
 package com.alading.dream.ui.find
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
+import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.alading.dream.R
-import com.alading.libcommon.utils.MyLog
+import com.alading.dream.model.SofaTab
+import com.alading.dream.ui.sofa.SofaFragment
+import com.alading.dream.utils.AppConfig
 import com.example.libnavannotation.FragmentDestination
+import kotlinx.android.synthetic.main.fragment_sofa.*
+import java.util.*
 
 @FragmentDestination(pageUrl = "main/tabs/find")
-class FindFragment : Fragment() {
+class FindFragment : SofaFragment() {
 
-    private lateinit var findViewModel: FindViewModel
+    override fun getTabFragment(position: Int): Fragment {
+        val tab = getTabConfig().tabs.get(position)
+        return TagListFragment.newInstance(tab.tag)
+    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        findViewModel =
-                ViewModelProviders.of(this).get(FindViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_find, container, false)
-        val textView: TextView = root.findViewById(R.id.text_find)
-        findViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-        return root
+    override fun getTabConfig(): SofaTab {
+        return AppConfig.getFindTabConfig()
+    }
+
+    override fun onAttachFragment(childFragment: Fragment) {
+        super.onAttachFragment(childFragment)
+        var tagType = childFragment.arguments?.getString(TagListFragment.KEY_TAG_TYPE)
+        if (TextUtils.equals(tagType,"onlyFollow")){
+            ViewModelProviders.of(childFragment).get(TagListViewModel::class.java).switchTabLiveData.observe(this,
+                Observer<Objects> {
+                    view_pager.currentItem = 1
+                })
+        }
     }
 }

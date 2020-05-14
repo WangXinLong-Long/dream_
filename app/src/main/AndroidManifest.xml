@@ -25,10 +25,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.publish.PreviewActivity"></activity>
-        <activity android:name=".ui.publish.CaptureActivity"
+        <activity android:name=".ui.find.TagFeedListActivity"></activity>
+        <activity android:name=".ui.publish.PreviewActivity" />
+        <activity
+            android:name=".ui.publish.CaptureActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/capture"/>
+            android:theme="@style/capture" />
         <activity
             android:name=".ui.detail.FeedDetailActivity"
             android:screenOrientation="portrait"

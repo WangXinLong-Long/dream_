@@ -21,7 +21,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_sofa.*
 
 @FragmentDestination(pageUrl = "main/tabs/sofa", asStarter = false)
-class SofaFragment : Fragment() {
+open class SofaFragment : Fragment() {
 
     private lateinit var sofaViewModel: SofaViewModel
     var tabs = arrayListOf<SofaTab.Tabs>()
@@ -118,11 +118,11 @@ class SofaFragment : Fragment() {
         return tabView
     }
 
-    private fun getTabFragment(position: Int): Fragment {
+    open fun getTabFragment(position: Int): Fragment {
         return HomeFragment.newInstance(tabs[position].tag)
     }
 
-    private fun getTabConfig(): SofaTab {
+    open fun getTabConfig(): SofaTab {
 
         return AppConfig.getSofaTabConfig()
     }
