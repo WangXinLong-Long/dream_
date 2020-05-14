@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.paging.ItemKeyedDataSource
+import androidx.paging.PagedList
 import com.alading.dream.exoplayer.PageListPlayDetector
 import com.alading.dream.model.Feed
 import com.alading.dream.ui.AbsListFragment
@@ -50,6 +51,18 @@ class HomeFragment : AbsListFragment<Feed, HomeViewModel>() {
                 super.onStartFeedDetailActivity(feed)
                 val isVideo = feed!!.itemType == Feed.TYPE_VIDEO
                 shouldPause = !isVideo
+            }
+
+            override fun onCurrentListChanged(
+                previousList: PagedList<Feed>?,
+                currentList: PagedList<Feed>?
+            ) {
+                super.onCurrentListChanged(previousList, currentList)
+                if (previousList!=null && currentList!=null){
+                    if (!currentList.containsAll(previousList)){
+                        mRecyclerView.scrollToPosition(0)
+                    }
+                }
             }
         }
     }
