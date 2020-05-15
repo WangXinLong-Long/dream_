@@ -6,6 +6,28 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+    signingConfigs {
+            debug {
+                keyAlias 'key0'
+                keyPassword '123456'
+                storeFile file(project.rootProject.file("dream.jks"))
+                storePassword '123456'
+            }
+            release {
+                keyAlias 'key0'
+                keyPassword '123456'
+                storeFile file(project.rootProject.file("dream.jks"))
+                storePassword '123456'
+            }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to checkforerrorsinrelease builds,
+        // but continue the build even whenerrorsarefound:
+        abortOnError false
+    }
+
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
