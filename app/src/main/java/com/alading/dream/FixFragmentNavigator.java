@@ -18,26 +18,30 @@ import androidx.navigation.fragment.FragmentNavigator;
 
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * 定制的Fragment导航器，替换ft.replace(mContainerId, frag);为 hide()/show()
+ */
 @Navigator.Name("fixfragment")
 public class FixFragmentNavigator extends FragmentNavigator {
     private static final String TAG = "FixFragmentNavigator";
     private Context mContext;
-    private FragmentManager mFragmentManager;
+    private FragmentManager mManager;
     private int mContainerId;
 
     public FixFragmentNavigator(@NonNull Context context, @NonNull FragmentManager manager, int containerId) {
         super(context, manager, containerId);
-        this.mContext = context;
-        this.mFragmentManager = manager;
-        this.mContainerId = containerId;
+        mContext = context;
+        mManager = manager;
+        mContainerId = containerId;
     }
 
+    @Nullable
     @Override
-    public NavDestination navigate(@NonNull Destination destination, @Nullable Bundle args,
-                                   @Nullable NavOptions navOptions, @Nullable Navigator.Extras navigatorExtras) {
-        if (mFragmentManager.isStateSaved()) {
+    public NavDestination navigate(@NonNull Destination destination, @Nullable Bundle args, @Nullable NavOptions navOptions, @Nullable Navigator.Extras navigatorExtras) {
+        if (mManager.isStateSaved()) {
             Log.i(TAG, "Ignoring navigate() call: FragmentManager has already"
                     + " saved its state");
             return null;
@@ -46,10 +50,15 @@ public class FixFragmentNavigator extends FragmentNavigator {
         if (className.charAt(0) == '.') {
             className = mContext.getPackageName() + className;
         }
-//        final Fragment frag = instantiateFragment(mContext, mFragmentManager,
-//                className, args);
-//        frag.setArguments(args);
-        final FragmentTransaction ft = mFragmentManager.beginTransaction();
+        //android.fragment.app.homefragment   homefragment
+        String tag = className.substring(className.lastIndexOf(".") + 1);
+        Fragment frag = mManager.findFragmentByTag(tag);
+        if (frag == null) {
+            frag = instantiateFragment(mContext, mManager,
+                    className, args);
+        }
+        frag.setArguments(args);
+        final FragmentTransaction ft = mManager.beginTransaction();
 
         int enterAnim = navOptions != null ? navOptions.getEnterAnim() : -1;
         int exitAnim = navOptions != null ? navOptions.getExitAnim() : -1;
@@ -63,25 +72,18 @@ public class FixFragmentNavigator extends FragmentNavigator {
             ft.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim);
         }
 
-        Fragment fragment = mFragmentManager.getPrimaryNavigationFragment();
-        if (fragment != null) {
+        List<Fragment> fragments = mManager.getFragments();
+        for (Fragment fragment : fragments) {
             ft.hide(fragment);
         }
-        Fragment frag = null;
-        String tag = String.valueOf(destination.getId());
-        frag = mFragmentManager.findFragmentByTag(tag);
-        if (frag != null) {
-            ft.show(frag);
-        } else {
-            frag = instantiateFragment(mContext, mFragmentManager, className, args);
-            frag.setArguments(args);
-            ft.add(mContainerId, frag,tag);
+        if (!frag.isAdded()) {
+            ft.add(mContainerId, frag, tag);
         }
-//        ft.replace(mContainerId, frag);
+        ft.show(frag);
+        //ft.replace(mContainerId, frag);
         ft.setPrimaryNavigationFragment(frag);
 
         final @IdRes int destId = destination.getId();
-
         ArrayDeque<Integer> mBackStack = null;
         try {
             Field field = FragmentNavigator.class.getDeclaredField("mBackStack");
@@ -92,6 +94,7 @@ public class FixFragmentNavigator extends FragmentNavigator {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+
         final boolean initialNavigation = mBackStack.isEmpty();
         // TODO Build first class singleTop behavior for fragments
         final boolean isSingleTopReplacement = navOptions != null && !initialNavigation
@@ -108,7 +111,7 @@ public class FixFragmentNavigator extends FragmentNavigator {
                 // back stack, a simple replace() isn't enough so we
                 // remove it from the back stack and put our replacement
                 // on the back stack in its place
-                mFragmentManager.popBackStack(
+                mManager.popBackStack(
                         generateBackStackName(mBackStack.size(), mBackStack.peekLast()),
                         FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 ft.addToBackStack(generateBackStackName(mBackStack.size(), destId));
@@ -135,7 +138,8 @@ public class FixFragmentNavigator extends FragmentNavigator {
         }
     }
 
-    private String generateBackStackName(int backStackIndex,int destId){
-        return backStackIndex+"-"+destId;
+    private String generateBackStackName(int backStackindex, int destid) {
+        return backStackindex + "-" + destid;
     }
 }
+

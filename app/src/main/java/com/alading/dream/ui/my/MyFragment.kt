@@ -19,17 +19,14 @@ import com.example.libnavannotation.FragmentDestination
 class MyFragment : Fragment() {
 
     private val myViewModel by viewModels<MyViewModel>()
-    private val mBinding by lazy {
-        DataBindingUtil.setContentView<FragmentMyBinding>(activity!!, R.layout.fragment_my)
-    }
-
+    private lateinit var mBinding :FragmentMyBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-
+        mBinding = FragmentMyBinding.inflate(inflater,container,false)
         return mBinding.root
     }
 

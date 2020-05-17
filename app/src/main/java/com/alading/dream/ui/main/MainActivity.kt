@@ -8,12 +8,14 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.alading.dream.R
+import com.alading.dream.data.model.Destination
 import com.alading.dream.ui.login.UserManager
 import com.alading.dream.utils.AppConfig
 import com.alading.dream.utils.NavGraphBuilder
 import com.alading.libcommon.utils.StatusBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var navController: NavController? = null
@@ -67,20 +69,30 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        var destConfig = AppConfig.getDestConfig()
-        for (entry in destConfig.entries) {
-            var destination = entry.value
-            if (destination != null && !UserManager.get().isLogin && destination.needLogin && destination.id == item.itemId) {
-                UserManager.get().login(this).observe(this, Observer {
-                    nav_view.selectedItemId = item.itemId
-                })
-
+    override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
+        val destConfig: HashMap<String, Destination> = AppConfig.getDestConfig()
+        val iterator: Iterator<Map.Entry<String, Destination>> =
+            destConfig.entries.iterator()
+        //遍历 target destination 是否需要登录拦截
+        while (iterator.hasNext()) {
+            val entry: Map.Entry<String, Destination> = iterator.next()
+            val value: Destination = entry.value
+            if (value != null && !UserManager.get()
+                        //TODO 修复选择时页面重叠的bug
+                    .isLogin && value.needLogin && value.id == menuItem.getItemId()
+            ) {
+                UserManager.get().login(this)
+                    .observe(this, Observer<Any?> { user ->
+                        if (user != null) {
+                            nav_view.setSelectedItemId(menuItem.getItemId())
+                        }
+                    })
                 return false
             }
         }
-        navController?.navigate(item.itemId)
-        return !TextUtils.isEmpty(item.title)
+
+        navController?.navigate(menuItem.getItemId())
+        return !TextUtils.isEmpty(menuItem.getTitle())
     }
 
     override fun onBackPressed() {

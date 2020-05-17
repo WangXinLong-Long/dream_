@@ -2,6 +2,8 @@ package com.alading.dream;
 
 import android.app.Application;
 
+import com.tencent.bugly.crashreport.CrashReport;
+
 
 /**
  * 咱们的服务器已经部署到公网了.
@@ -15,6 +17,7 @@ public class JokeApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        CrashReport.initCrashReport(getApplicationContext(), "306a11d8f9", true);
         ApiService.init("http://123.56.232.18:8080/serverdemo", null);
 
     }
