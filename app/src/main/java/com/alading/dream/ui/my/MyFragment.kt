@@ -25,7 +25,7 @@ class MyFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+//TODO 修复点击我的页面崩溃的问题
         mBinding = FragmentMyBinding.inflate(inflater,container,false)
         return mBinding.root
     }
