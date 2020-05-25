@@ -23,6 +23,7 @@ import com.alading.dream.R;
 import com.alading.dream.databinding.ActivityTagFeedListBinding;
 import com.alading.dream.databinding.LayoutTagFeedListHeaderBinding;
 import com.alading.dream.exoplayer.PageListPlayDetector;
+import com.alading.dream.exoplayer.PageListPlayManager;
 import com.alading.dream.model.Feed;
 import com.alading.dream.model.TagList;
 import com.alading.dream.ui.home.FeedAdapter;
@@ -168,6 +169,27 @@ public class TagFeedListActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         };
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (shouldPause) {
+            playDetector.onPause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        shouldPause = true;
+        playDetector.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        PageListPlayManager.release(KEY_FEED_TYPE);
+        super.onDestroy();
     }
 
     @Override
