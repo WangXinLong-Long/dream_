@@ -114,7 +114,7 @@ dependencies {
     api 'com.github.chrisbanes:PhotoView:2.3.0'
 
     //aliyun oss
-    api 'com.aliyun.dpa:oss-android-sdk:2.5.0'
+    api 'com.aliyun.dpa:oss-android-sdk:+'
 
     //fastjson解析
     api 'com.alibaba:fastjson:1.2.59'

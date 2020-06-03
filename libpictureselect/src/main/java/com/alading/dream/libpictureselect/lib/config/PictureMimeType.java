@@ -4,7 +4,8 @@ package com.alading.dream.libpictureselect.lib.config;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.luck.picture.lib.R;
+
+import com.alading.dream.libpictureselect.R;
 
 import java.io.File;
 

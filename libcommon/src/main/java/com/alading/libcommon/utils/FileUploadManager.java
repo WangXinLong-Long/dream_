@@ -23,10 +23,12 @@ import com.alibaba.sdk.android.oss.model.PutObjectResult;
  */
 public class FileUploadManager {
     private static OSSClient oss = null;
-    private static final String ALIYUN_BUCKET_URL = "https://pipijoke.oss-cn-hangzhou.aliyuncs.com/";
-    private static final String BUCKET_NAME = "pipijoke";
-    private static final String END_POINT = "http://oss-cn-hangzhou.aliyuncs.com";
-    private static final String AUTH_SERVER_URL = "http://123.56.232.18:7080/";
+//
+//aladingdream.oss-cn-beijing.aliyuncs.com
+    private static final String ALIYUN_BUCKET_URL = "https://aladingdream.oss-cn-beijing.aliyuncs.com/";
+    private static final String BUCKET_NAME = "aladingdream";
+    private static final String END_POINT = "http://oss-cn-beijing.aliyuncs.com";
+    private static final String AUTH_SERVER_URL = "http://47.100.117.247:7080/";
 
     static {
 

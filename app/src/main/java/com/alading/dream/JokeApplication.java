@@ -18,7 +18,7 @@ public class JokeApplication extends Application {
     public void onCreate() {
         super.onCreate();
         CrashReport.initCrashReport(getApplicationContext(), "306a11d8f9", true);
-        ApiService.init("http://123.56.232.18:8080/serverdemo", null);
+        ApiService.init("http://47.100.117.247:8080/dream", null);
 
     }
 }
