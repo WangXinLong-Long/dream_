@@ -37,6 +37,7 @@ import android.widget.Toast;
 
 import com.alading.dream.libpictureselect.databinding.ActivityLayoutCaptureBinding;
 import com.alading.dream.libpictureselect.lib.config.PictureConfig;
+import com.alading.dream.libpictureselect.lib.config.PictureMimeType;
 import com.alading.dream.libpictureselect.view.RecordView;
 
 import java.io.File;
@@ -129,17 +130,58 @@ public class CaptureActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PreviewActivity.REQ_PREVIEW && resultCode == RESULT_OK) {
-            Intent intent = new Intent();
-            intent.putExtra(RESULT_FILE_PATH, outputFilePath);
-            //当设备处于竖屏情况时，宽高的值 需要互换，横屏不需要
-            intent.putExtra(RESULT_FILE_WIDTH, resolution.getHeight());
-            intent.putExtra(RESULT_FILE_HEIGHT, resolution.getWidth());
-            intent.putExtra(RESULT_FILE_TYPE, !takingPicture);
-            setResult(RESULT_OK, intent);
-            finish();
+//            Intent intent = new Intent();
+//            intent.putExtra(RESULT_FILE_PATH, outputFilePath);
+//            //当设备处于竖屏情况时，宽高的值 需要互换，横屏不需要
+//            intent.putExtra(RESULT_FILE_WIDTH, resolution.getHeight());
+//            intent.putExtra(RESULT_FILE_HEIGHT, resolution.getWidth());
+//            intent.putExtra(RESULT_FILE_TYPE, !takingPicture);
+//            setResult(RESULT_OK, intent);
+//            finish();
+
+            if (!takingPicture) {
+                if (outputFilePath == null) {
+                    return;
+                }
+                stopVideoPlay();
+                if (mCameraListener != null || !mVideoFile.exists()) {
+                    mCameraListener.onRecordSuccess(mVideoFile);
+                }
+            } else {
+                if (mPhotoFile == null || !mPhotoFile.exists()) {
+                    return;
+                }
+                mImagePreview.setVisibility(INVISIBLE);
+                if (mCameraListener != null) {
+                    mCameraListener.onPictureSuccess(mPhotoFile);
+                }
+            }
         }
     }
-
+    public void onPictureSuccess(@NonNull File file) {
+        config.cameraMimeType = PictureMimeType.ofImage();
+        Intent intent = new Intent();
+        intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH, file.getAbsolutePath());
+        intent.putExtra(PictureConfig.EXTRA_CONFIG, config);
+        if (config.camera) {
+            dispatchHandleCamera(intent);
+        } else {
+            setResult(RESULT_OK, intent);
+            onBackPressed();
+        }
+    }
+    public void onRecordSuccess(@NonNull File file) {
+        config.cameraMimeType = PictureMimeType.ofVideo();
+        Intent intent = new Intent();
+        intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH, file.getAbsolutePath());
+        intent.putExtra(PictureConfig.EXTRA_CONFIG, config);
+        if (config.camera) {
+            dispatchHandleCamera(intent);
+        } else {
+            setResult(RESULT_OK, intent);
+            onBackPressed();
+        }
+    }
     private void onFileSaved(File file) {
         outputFilePath = file.getAbsolutePath();
         String mimeType = takingPicture ? "image/jpeg" : "video/mp4";
