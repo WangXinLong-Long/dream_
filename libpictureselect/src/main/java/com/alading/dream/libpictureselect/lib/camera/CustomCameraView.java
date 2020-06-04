@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
@@ -78,7 +79,7 @@ public class CustomCameraView extends RelativeLayout {
     private CameraListener mCameraListener;
     private ClickListener mOnClickListener;
     private ImageCallbackListener mImageCallbackListener;
-    private androidx.camera.view.CameraView mCameraView;
+    private CameraView mCameraView;
     private ImageView mImagePreview;
     private ImageView mSwitchCamera;
     private ImageView mFlashLamp;
@@ -102,6 +103,7 @@ public class CustomCameraView extends RelativeLayout {
         initView();
     }
 
+    private static final String TAG = "CustomCameraView";
     public void initView() {
         setWillNotDraw(false);
         setBackgroundColor(ContextCompat.getColor(getContext(), R.color.picture_color_black));
@@ -146,10 +148,12 @@ public class CustomCameraView extends RelativeLayout {
                 mSwitchCamera.setVisibility(INVISIBLE);
                 mFlashLamp.setVisibility(INVISIBLE);
                 mCameraView.setCaptureMode(androidx.camera.view.CameraView.CaptureMode.VIDEO);
+
                 mCameraView.startRecording(createVideoFile(),/* ContextCompat.getMainExecutor(getContext()),*/
                         new VideoCapture.OnVideoSavedListener() {
                             @Override
                             public void onVideoSaved(@NonNull File file) {
+                                Log.d(TAG, "onVideoSaved: "+Thread.currentThread().getName());
                                 mVideoFile = file;
                                 if (recordTime < 1500 && mVideoFile.exists() && mVideoFile.delete()) {
                                     return;
@@ -169,13 +173,19 @@ public class CustomCameraView extends RelativeLayout {
                                         }
                                     });
                                 }
-                                mTextureView.setVisibility(View.VISIBLE);
-                                mCameraView.setVisibility(View.INVISIBLE);
-                                if (mTextureView.isAvailable()) {
-                                    startVideoPlay(mVideoFile);
-                                } else {
-                                    mTextureView.setSurfaceTextureListener(surfaceTextureListener);
-                                }
+                                mTextureView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mTextureView.setVisibility(View.VISIBLE);
+                                        mCameraView.setVisibility(View.INVISIBLE);
+                                        if (mTextureView.isAvailable()) {
+                                            startVideoPlay(mVideoFile);
+                                        } else {
+                                            mTextureView.setSurfaceTextureListener(surfaceTextureListener);
+                                        }
+                                    }
+                                });
+
                             }
 
                             @Override

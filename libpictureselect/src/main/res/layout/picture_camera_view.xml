@@ -44,7 +44,7 @@
         android:src="@drawable/picture_ic_flash_on" />
 
 
-    <com.luck.picture.lib.camera.view.CaptureLayout
+    <com.alading.dream.libpictureselect.lib.camera.view.CaptureLayout
         android:id="@+id/capture_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

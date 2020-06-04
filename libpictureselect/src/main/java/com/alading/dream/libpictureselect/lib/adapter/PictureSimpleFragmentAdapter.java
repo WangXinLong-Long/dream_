@@ -19,12 +19,12 @@ import com.alading.dream.libpictureselect.lib.config.PictureConfig;
 import com.alading.dream.libpictureselect.lib.config.PictureMimeType;
 import com.alading.dream.libpictureselect.lib.config.PictureSelectionConfig;
 import com.alading.dream.libpictureselect.lib.entity.LocalMedia;
+import com.alading.dream.libpictureselect.lib.photoview.PhotoView;
 import com.alading.dream.libpictureselect.lib.tools.JumpUtils;
 import com.alading.dream.libpictureselect.lib.tools.MediaUtils;
 import com.alading.dream.libpictureselect.lib.widget.longimage.ImageSource;
 import com.alading.dream.libpictureselect.lib.widget.longimage.ImageViewState;
 import com.alading.dream.libpictureselect.lib.widget.longimage.SubsamplingScaleImageView;
-import com.github.chrisbanes.photoview.PhotoView;
 
 import org.jetbrains.annotations.NotNull;
 
