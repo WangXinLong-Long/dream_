@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,7 @@ import com.alading.dream.R;
 import com.alading.dream.databinding.LayoutCommentDialogBinding;
 import com.alading.dream.model.Comment;
 import com.alading.dream.ui.login.UserManager;
-import com.alading.dream.ui.publish.CaptureActivity;
+import com.alading.dream.libpictureselect.CaptureActivity;
 import com.alading.libcommon.dialog.LoadingDialog;
 import com.alading.libcommon.global.AppGlobals;
 import com.alading.libcommon.utils.FileUploadManager;
@@ -39,8 +38,6 @@ import com.alading.libcommon.utils.PixUtils;
 import com.alading.libcommon.view.ViewHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static android.content.ContentValues.TAG;
 
 public class CommentDialog extends AppCompatDialogFragment implements View.OnClickListener {
     LayoutCommentDialogBinding mBinding;

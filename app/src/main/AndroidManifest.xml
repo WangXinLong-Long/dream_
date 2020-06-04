@@ -28,9 +28,9 @@
         <activity android:name=".ui.my.UserBehaviorListActivity"></activity>
         <activity android:name=".ui.my.ProfileActivity" />
         <activity android:name=".ui.find.TagFeedListActivity" />
-        <activity android:name=".ui.publish.PreviewActivity" />
+        <activity android:name=".libpictureselect.PreviewActivity" />
         <activity
-            android:name=".ui.publish.CaptureActivity"
+            android:name=".libpictureselect.CaptureActivity"
             android:screenOrientation="portrait"
             android:theme="@style/capture" />
         <activity

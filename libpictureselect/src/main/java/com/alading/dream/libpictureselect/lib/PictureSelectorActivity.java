@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.alading.dream.libpictureselect.CaptureActivity;
 import com.alading.dream.libpictureselect.R;
 import com.alading.dream.libpictureselect.lib.adapter.PictureImageGridAdapter;
 import com.alading.dream.libpictureselect.lib.animators.AlphaInAnimationAdapter;
@@ -707,8 +708,9 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
      */
     private void startCustomCamera() {
         if (PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)) {
-            Intent intent = new Intent(this, PictureCustomCameraActivity.class);
-            startActivityForResult(intent, PictureConfig.REQUEST_CAMERA);
+            CaptureActivity.startActivityForResult(this);
+//            Intent intent = new Intent(this, PictureCustomCameraActivity.class);
+//            startActivityForResult(intent, PictureConfig.REQUEST_CAMERA);
             PictureWindowAnimationStyle windowAnimationStyle = config.windowAnimationStyle;
             overridePendingTransition(windowAnimationStyle != null &&
                     windowAnimationStyle.activityEnterAnimation != 0 ?

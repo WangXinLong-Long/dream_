@@ -60,4 +60,8 @@
     <string name="picture_go_setting">去设置</string>
     <string name="picture_know">我知道了</string>
     <string name="picture_data_null">这里空空如也…</string>
+    <string name="capture_permission_message">必须的权限没有得到授权，功能将无法使用 请重新授权!</string>
+    <string name="capture_permission_no">不</string>
+    <string name="capture_permission_ok">好的</string>
+    <string name="preview_ok">完成</string>
 </resources>

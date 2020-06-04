@@ -19,7 +19,7 @@ import com.alading.dream.model.Comment;
 import com.alading.dream.ui.InteractionPresenter;
 import com.alading.dream.ui.MutableItemKeyedDataSource;
 import com.alading.dream.ui.login.UserManager;
-import com.alading.dream.ui.publish.PreviewActivity;
+import com.alading.dream.libpictureselect.PreviewActivity;
 import com.alading.libcommon.extention.AbsPagedListAdapter;
 import com.alading.libcommon.utils.PixUtils;
 

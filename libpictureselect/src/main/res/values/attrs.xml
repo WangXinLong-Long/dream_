@@ -37,4 +37,13 @@
     <attr name="picture.crop.status.color" format="reference|color" />
     <attr name="picture.crop.title.color" format="reference|color" />
     <attr name="picture.folder_checked_dot" format="reference" />
+
+    <declare-styleable name="RecordView">
+
+        <attr name="progress_color" format="color"/>
+        <attr name="progress_width" format="dimension"/>
+        <attr name="fill_color" format="color"/>
+        <attr name="radius" format="dimension"/>
+        <attr name="duration" format="integer"/>
+    </declare-styleable>
 </resources>

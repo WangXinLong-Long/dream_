@@ -1,4 +1,4 @@
-package com.alading.dream.ui.publish;
+package com.alading.dream.libpictureselect;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +15,6 @@ import androidx.camera.core.VideoCapture;
 import androidx.camera.core.VideoCaptureConfig;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -25,7 +24,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Rational;
@@ -36,9 +34,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.alading.dream.R;
-import com.alading.dream.databinding.ActivityLayoutCaptureBinding;
-import com.alading.dream.ui.view.RecordView;
+
+import com.alading.dream.libpictureselect.databinding.ActivityLayoutCaptureBinding;
+import com.alading.dream.libpictureselect.lib.config.PictureConfig;
+import com.alading.dream.libpictureselect.view.RecordView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -72,7 +71,7 @@ public class CaptureActivity extends AppCompatActivity {
 
     public static void startActivityForResult(Activity activity) {
         Intent intent = new Intent(activity, CaptureActivity.class);
-        activity.startActivityForResult(intent, REQ_CAPTURE);
+        activity.startActivityForResult(intent, PictureConfig.REQUEST_CAMERA);
     }
 
     @Override

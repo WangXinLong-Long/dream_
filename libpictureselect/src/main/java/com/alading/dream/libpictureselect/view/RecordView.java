@@ -1,4 +1,4 @@
-package com.alading.dream.ui.view;
+package com.alading.dream.libpictureselect.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -16,7 +16,7 @@ import android.view.ViewConfiguration;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.alading.dream.R;
+import com.alading.dream.libpictureselect.R;
 import com.alading.libcommon.utils.PixUtils;
 
 import java.util.logging.LogRecord;

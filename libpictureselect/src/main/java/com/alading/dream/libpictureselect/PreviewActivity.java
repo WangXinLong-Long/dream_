@@ -1,4 +1,4 @@
-package com.alading.dream.ui.publish;
+package com.alading.dream.libpictureselect;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -10,8 +10,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.alading.dream.R;
-import com.alading.dream.databinding.ActivityLayoutPreviewBinding;
+import com.alading.dream.libpictureselect.databinding.ActivityLayoutPreviewBinding;
 import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -26,8 +25,6 @@ import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.android.exoplayer2.util.Util;
 
 import java.io.File;
-
-import javax.sql.DataSource;
 
 public class PreviewActivity extends AppCompatActivity  implements View.OnClickListener{
     private ActivityLayoutPreviewBinding mPreviewBinding;
