@@ -33,6 +33,7 @@ import com.alading.dream.libpictureselect.lib.dialog.PictureCustomDialog;
 import com.alading.dream.libpictureselect.lib.entity.LocalMedia;
 import com.alading.dream.libpictureselect.lib.listener.OnImageCompleteCallback;
 import com.alading.dream.libpictureselect.lib.permissions.PermissionChecker;
+import com.alading.dream.libpictureselect.lib.photoview.PhotoView;
 import com.alading.dream.libpictureselect.lib.thread.PictureThreadUtils;
 import com.alading.dream.libpictureselect.lib.tools.AttrsUtils;
 import com.alading.dream.libpictureselect.lib.tools.DateUtils;
@@ -46,7 +47,6 @@ import com.alading.dream.libpictureselect.lib.widget.PreviewViewPager;
 import com.alading.dream.libpictureselect.lib.widget.longimage.ImageSource;
 import com.alading.dream.libpictureselect.lib.widget.longimage.ImageViewState;
 import com.alading.dream.libpictureselect.lib.widget.longimage.SubsamplingScaleImageView;
-import com.github.chrisbanes.photoview.PhotoView;
 
 
 import java.io.File;

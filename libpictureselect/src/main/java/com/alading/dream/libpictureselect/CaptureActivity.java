@@ -23,6 +23,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -38,6 +39,14 @@ import android.widget.Toast;
 import com.alading.dream.libpictureselect.databinding.ActivityLayoutCaptureBinding;
 import com.alading.dream.libpictureselect.lib.config.PictureConfig;
 import com.alading.dream.libpictureselect.lib.config.PictureMimeType;
+import com.alading.dream.libpictureselect.lib.config.PictureSelectionConfig;
+import com.alading.dream.libpictureselect.lib.thread.PictureThreadUtils;
+import com.alading.dream.libpictureselect.lib.tools.AndroidQTransformUtils;
+import com.alading.dream.libpictureselect.lib.tools.DateUtils;
+import com.alading.dream.libpictureselect.lib.tools.MediaUtils;
+import com.alading.dream.libpictureselect.lib.tools.PictureFileUtils;
+import com.alading.dream.libpictureselect.lib.tools.SdkVersionUtils;
+import com.alading.dream.libpictureselect.lib.tools.StringUtils;
 import com.alading.dream.libpictureselect.view.RecordView;
 
 import java.io.File;
@@ -68,6 +77,7 @@ public class CaptureActivity extends AppCompatActivity {
     public static final String RESULT_FILE_WIDTH = "file_width";
     public static final String RESULT_FILE_HEIGHT = "file_height";
     public static final String RESULT_FILE_TYPE = "file_type";
+    private PictureSelectionConfig mConfig;
 
 
     public static void startActivityForResult(Activity activity) {
@@ -85,11 +95,28 @@ public class CaptureActivity extends AppCompatActivity {
             @Override
             public void onClick() {
                 takingPicture = true;
-                File file = new File(getExternalCacheDir(), System.currentTimeMillis() + ".jpeg");
+                File file = createImageFile();//new File(getExternalCacheDir(), System.currentTimeMillis() + ".jpeg");
                 mBinding.captureTips.setVisibility(View.INVISIBLE);
                 imageCapture.takePicture(file, new ImageCapture.OnImageSavedListener() {
                     @Override
                     public void onImageSaved(@NonNull File file) {
+                        if (mConfig != null) {
+                            if (SdkVersionUtils.checkedAndroid_Q() && PictureMimeType.isContent(mConfig.cameraPath)) {
+                                PictureThreadUtils.executeByIo(new PictureThreadUtils.SimpleTask<Boolean>() {
+
+                                    @Override
+                                    public Boolean doInBackground() {
+                                        return AndroidQTransformUtils.copyPathToDCIM(CaptureActivity.this,
+                                                file, Uri.parse(mConfig.cameraPath));
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Boolean result) {
+                                        PictureThreadUtils.cancel(PictureThreadUtils.getIoPool());
+                                    }
+                                });
+                            }
+                        }
                         onFileSaved(file);
                     }
 
@@ -104,10 +131,26 @@ public class CaptureActivity extends AppCompatActivity {
             @Override
             public void onLongClick() {
                 takingPicture = false;
-                File file = new File(getExternalCacheDir(), System.currentTimeMillis() + ".mp4");
+                File file = createVideoFile();//new File(getExternalCacheDir(), System.currentTimeMillis() + ".mp4");
                 videoCapture.startRecording(file, new VideoCapture.OnVideoSavedListener() {
                     @Override
                     public void onVideoSaved(File file) {
+
+                        if (SdkVersionUtils.checkedAndroid_Q() && PictureMimeType.isContent(mConfig.cameraPath)) {
+                            PictureThreadUtils.executeByIo(new PictureThreadUtils.SimpleTask<Boolean>() {
+
+                                @Override
+                                public Boolean doInBackground() {
+                                    return AndroidQTransformUtils.copyPathToDCIM(CaptureActivity.this,
+                                            file, Uri.parse(mConfig.cameraPath));
+                                }
+
+                                @Override
+                                public void onSuccess(Boolean result) {
+                                    PictureThreadUtils.cancel(PictureThreadUtils.getIoPool());
+                                }
+                            });
+                        }
                         onFileSaved(file);
                     }
 
@@ -124,6 +167,74 @@ public class CaptureActivity extends AppCompatActivity {
                 videoCapture.stopRecording();
             }
         });
+
+        mConfig = PictureSelectionConfig.getInstance();
+    }
+    public File createImageFile() {
+        if (SdkVersionUtils.checkedAndroid_Q()) {
+            String diskCacheDir = PictureFileUtils.getDiskCacheDir(this);
+            File rootDir = new File(diskCacheDir);
+            if (!rootDir.exists() && rootDir.mkdirs()) {
+            }
+            boolean isOutFileNameEmpty = TextUtils.isEmpty(mConfig.cameraFileName);
+            String suffix = TextUtils.isEmpty(mConfig.suffixType) ? PictureFileUtils.POSTFIX : mConfig.suffixType;
+            String newFileImageName = isOutFileNameEmpty ? DateUtils.getCreateFileName("IMG_") + suffix : mConfig.cameraFileName;
+            File cameraFile = new File(rootDir, newFileImageName);
+            Uri outUri = getOutUri(PictureMimeType.ofImage());
+            if (outUri != null) {
+                mConfig.cameraPath = outUri.toString();
+            }
+            return cameraFile;
+        } else {
+            String cameraFileName = "";
+            if (!TextUtils.isEmpty(mConfig.cameraFileName)) {
+                boolean isSuffixOfImage = PictureMimeType.isSuffixOfImage(mConfig.cameraFileName);
+                mConfig.cameraFileName = !isSuffixOfImage ? StringUtils.renameSuffix(mConfig.cameraFileName, PictureMimeType.JPEG) : mConfig.cameraFileName;
+                cameraFileName = mConfig.camera ? mConfig.cameraFileName : StringUtils.rename(mConfig.cameraFileName);
+            }
+            File cameraFile = PictureFileUtils.createCameraFile(this,
+                    PictureMimeType.ofImage(), cameraFileName, mConfig.suffixType, mConfig.outPutCameraPath);
+            if (cameraFile != null) {
+                mConfig.cameraPath = cameraFile.getAbsolutePath();
+            }
+            return cameraFile;
+        }
+    }
+
+
+    public File createVideoFile() {
+        if (SdkVersionUtils.checkedAndroid_Q()) {
+            String diskCacheDir = PictureFileUtils.getVideoDiskCacheDir(this);
+            File rootDir = new File(diskCacheDir);
+            if (!rootDir.exists() && rootDir.mkdirs()) {
+            }
+            boolean isOutFileNameEmpty = TextUtils.isEmpty(mConfig.cameraFileName);
+            String suffix = TextUtils.isEmpty(mConfig.suffixType) ? PictureMimeType.MP4 : mConfig.suffixType;
+            String newFileImageName = isOutFileNameEmpty ? DateUtils.getCreateFileName("VID_") + suffix : mConfig.cameraFileName;
+            File cameraFile = new File(rootDir, newFileImageName);
+            Uri outUri = getOutUri(PictureMimeType.ofVideo());
+            if (outUri != null) {
+                mConfig.cameraPath = outUri.toString();
+            }
+            return cameraFile;
+        } else {
+            String cameraFileName = "";
+            if (!TextUtils.isEmpty(mConfig.cameraFileName)) {
+                boolean isSuffixOfImage = PictureMimeType.isSuffixOfImage(mConfig.cameraFileName);
+                mConfig.cameraFileName = !isSuffixOfImage ? StringUtils
+                        .renameSuffix(mConfig.cameraFileName, PictureMimeType.MP4) : mConfig.cameraFileName;
+                cameraFileName = mConfig.camera ? mConfig.cameraFileName : StringUtils.rename(mConfig.cameraFileName);
+            }
+            File cameraFile = PictureFileUtils.createCameraFile(this,
+                    PictureMimeType.ofVideo(), cameraFileName, mConfig.suffixType, mConfig.outPutCameraPath);
+            mConfig.cameraPath = cameraFile.getAbsolutePath();
+            return cameraFile;
+        }
+    }
+
+    private Uri getOutUri(int type) {
+        return type == PictureMimeType.ofVideo()
+                ? MediaUtils.createVideoUri(this, mConfig.suffixType) : MediaUtils.createImageUri(this, mConfig.suffixType);
     }
 
     @Override
@@ -140,48 +251,32 @@ public class CaptureActivity extends AppCompatActivity {
 //            finish();
 
             if (!takingPicture) {
-                if (outputFilePath == null) {
-                    return;
-                }
-                stopVideoPlay();
-                if (mCameraListener != null || !mVideoFile.exists()) {
-                    mCameraListener.onRecordSuccess(mVideoFile);
-                }
+                onRecordSuccess(outputFilePath);
             } else {
-                if (mPhotoFile == null || !mPhotoFile.exists()) {
-                    return;
-                }
-                mImagePreview.setVisibility(INVISIBLE);
-                if (mCameraListener != null) {
-                    mCameraListener.onPictureSuccess(mPhotoFile);
-                }
+                onPictureSuccess(outputFilePath);
             }
         }
     }
-    public void onPictureSuccess(@NonNull File file) {
-        config.cameraMimeType = PictureMimeType.ofImage();
+
+    public void onPictureSuccess(@NonNull  String path) {
+        mConfig.cameraMimeType = PictureMimeType.ofImage();
         Intent intent = new Intent();
-        intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH, file.getAbsolutePath());
-        intent.putExtra(PictureConfig.EXTRA_CONFIG, config);
-        if (config.camera) {
-            dispatchHandleCamera(intent);
-        } else {
-            setResult(RESULT_OK, intent);
-            onBackPressed();
-        }
+        intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH,path);
+        intent.putExtra(PictureConfig.EXTRA_CONFIG, mConfig);
+        setResult(RESULT_OK, intent);
+        onBackPressed();
+
     }
-    public void onRecordSuccess(@NonNull File file) {
-        config.cameraMimeType = PictureMimeType.ofVideo();
+
+    public void onRecordSuccess(@NonNull String path) {
+        mConfig.cameraMimeType = PictureMimeType.ofVideo();
         Intent intent = new Intent();
-        intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH, file.getAbsolutePath());
-        intent.putExtra(PictureConfig.EXTRA_CONFIG, config);
-        if (config.camera) {
-            dispatchHandleCamera(intent);
-        } else {
-            setResult(RESULT_OK, intent);
-            onBackPressed();
-        }
+        intent.putExtra(PictureConfig.EXTRA_MEDIA_PATH, path );
+        intent.putExtra(PictureConfig.EXTRA_CONFIG, mConfig);
+        setResult(RESULT_OK, intent);
+        onBackPressed();
     }
+
     private void onFileSaved(File file) {
         outputFilePath = file.getAbsolutePath();
         String mimeType = takingPicture ? "image/jpeg" : "video/mp4";
